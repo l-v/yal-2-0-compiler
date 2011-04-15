@@ -1,0 +1,17 @@
+
+module v_2
+{
+ function main()
+ {
+   a = [3];
+   a[0] = 10;
+   a[1] = 2;
+   a[2] = 3;
+   b = a;
+   b[0] = a[0] + a[1];
+   b[0] = a[0] + a[2];
+   
+   t = a[0];
+  io.println(t); // result= 15
+ }
+}

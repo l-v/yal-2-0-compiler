@@ -1,0 +1,13 @@
+echo -e '\nCompiling java code - yal2jvm\n\n'
+
+jjtree yal2jvm.jjt
+echo -e '\n---\n'
+javacc yal2jvm.jj
+echo -e '\n---\n'
+javac yal2jvm.java
+echo -e '\n'
+
+
+
+
+

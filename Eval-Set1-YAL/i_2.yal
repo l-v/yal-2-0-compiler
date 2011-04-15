@@ -1,0 +1,29 @@
+module i_2
+{
+
+function main() {
+		 a = 2;
+		 b = 3;
+		 c = 4;
+		 d = 10;
+
+		 m = 0;
+
+    if(a < b) {
+    	 if(a < c) {
+    	 	  if(a < d) {
+	 	  	    m = 2;
+    	 	  } else {
+	  	 	  	m = 3;
+    	 	  }
+		  } else {
+ 		    m=4;
+          }
+    } else {
+		 m=1;
+    }
+
+    io.print(m); // result = 2
+}
+
+}

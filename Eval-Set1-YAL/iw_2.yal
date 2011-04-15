@@ -1,0 +1,33 @@
+module iw_2
+{
+
+function main()
+{
+
+a = 4;
+c = 5;
+    b = 10;
+ 	if(a == c) {
+		while(a < b) {
+			a = a+1;
+ 		}
+		c = a << 2;
+	} else {
+		c = c - a;
+	}
+ io.println(c); // result= 1
+
+a = 2;
+c = 2;
+if(a == c) {
+		while(a < b) {
+			a = a+1;
+ 		}
+		c = a << 1;
+	} else {
+		c = c + a;
+	}
+ io.println(c); // result= 20
+}
+
+}

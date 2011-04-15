@@ -1,0 +1,12 @@
+module f_2 {
+
+   function a=f(b, c) {
+     a = b*c;
+   }
+
+   function main() {
+	 r=f_2.f(2,3);
+	 io.println(r); // print 6
+   }
+
+}

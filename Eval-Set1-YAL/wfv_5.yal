@@ -1,0 +1,29 @@
+
+module wfv_5
+{
+
+ function t=pow(a[])
+ {
+   i = 0;
+   t = 1;
+   while(i < a.size) {
+      t = t*a[i];
+      i = i + 1;
+   }
+ }
+
+ function main()
+ {
+
+   a = [3];
+
+   a[0]=2;
+   a[1]=2;
+   a[2]=4;
+
+   t = pow(a);
+
+   io.println("pow a: ",t); // result= 16
+
+ }
+}

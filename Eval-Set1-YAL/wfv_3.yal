@@ -1,0 +1,38 @@
+
+module wfv_3
+{
+
+ function s = zeros(a[])
+ {
+   i = 0;
+   while(i < a.size) {
+      a[i] = 0;
+      i = i + 1;
+   }
+
+   s = i;
+ }
+
+ function total = sum(a[])
+ {
+   i = 0;
+   total = 0;
+   while(i < a.size) {
+      total = total + a[i];
+      i = i + 1;
+   }
+ }
+
+ function main()
+ {
+
+   a = [3];
+   size_a = zeros(a);
+
+   total = sum(a);
+
+   io.println("numero de elementos de a: ",size_a); // result= 3
+
+   io.println("soma dos elementos de a: ",total); // result= 0
+ }
+}

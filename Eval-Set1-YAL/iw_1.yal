@@ -1,0 +1,18 @@
+
+module iw_1
+{
+
+function main()
+{
+ a=5;
+
+ c = 0;
+ while(c <= a) {
+         c = a+c;
+         if(c == 10) {
+              io.println(c);
+         }
+ }
+ io.println(c); // result= 10
+}
+}
