@@ -1,6 +1,9 @@
 /**
  * JavaCC template file created by SF JavaCC plugin 1.5.17+ wizard for JavaCC 1.5.0+
  */
+
+
+
 options
 {
   JDK_VERSION = "1.5";
@@ -9,20 +12,66 @@ options
 }
 
 PARSER_BEGIN(yal2jvm)
+import java.util.*;
 
 // código Java que invoca o parser
   public class yal2jvm {
-     public static void main(String args[]) throws ParseException {
+
+	public static HashMap ST = new HashMap();
+
+	public static class STC extends Object {
+
+
+	  String type;  // type,in calculator expample there only is one type==> Int.
+	  String value; // value, the value in here is a string not a integer value.
+
+	  public STC(String itype, String ivalue) {
+	    type=itype;
+	    value=ivalue;
+
+	  }
+	}
+
+	public static void main(String args[]) throws ParseException {
+
+	String temp;
+	STC    temp2;
+
+
+
        // criação do objecto utilizando o constructor com argumento para
        // ler do standard input (teclado)
        yal2jvm newParser = new yal2jvm(System.in);
       // newParser.Module();
+
+	// symbol table
+	
+
            
       SimpleNode root = newParser.parserBegin(); //devolve referência para o nó raiz da árvore
     //  System.out.println("Valor da expressão: "+myCalc.eval(root));
       root.dump("");
-     }
+     
+
+	// print symbol table
+    Iterator t = ST.keySet().iterator();
+
+
+     while ( t.hasNext() == true ) {
+
+          temp = (String)t.next();
+          temp2 = (STC)ST.get(temp);
+          System.out.println(temp);
+          if ( temp2.type != null )
+            System.out.println(" type = " + temp2.type);
+          if ( temp2.value != null )
+            System.out.println(" value = " + temp2.value);
+
+    }
+
+	}
   }
+
 PARSER_END(yal2jvm)
 
 // símbolos que não devem ser considerados na análise
@@ -86,19 +135,31 @@ void Module() #void : {Token t0;}
   arvore: 3: MID Decl Func;
   falta os valores*/
   
-  <MODULE> t0=<ID> {jjtThis.val = t0.image;} #MID
+  <MODULE> t0=<ID> {jjtThis.val = t0.image; ST.put(t0.image, new STC("ID",t0.image));} #MID
   <LCHAVETA>
   (Declaration() #Decl)* 
   (Function() #Func)*
   <RCHAVETA>
+
+
+
 }
 
 
-void Declaration() #void : {Token t0;}
+void Declaration() #void : {Token t0; Token t1; Token t2;}
 {
-  t0=<ID> {jjtThis.val = t0.image;} #DeclID ["[" "]"] // (ArrayElement() | ScalarElement())
+  t0=<ID> {jjtThis.val = t0.image; HashMap temp = new HashMap(); temp.put(t0.image, new STC("ID",t0.image));} #DeclID ["[" "]"] // (ArrayElement() | ScalarElement())
   (<ASSIGN> (("[" ArraySize() #ArraySize "]")
-	      | (<ADDSUB_OP>)? <INTEGER> #InicVar))?  <PVIRG>
+	      | (t1=<ADDSUB_OP> {jjtThis.val = t1.image; 
+				HashMap temp = new HashMap(); temp.put(t1.image, new STC("AddSubOP", t1.image));} 
+				#AddSubOP)? 
+		t2=<INTEGER> {jjtThis.val = t2.image; HashMap temp = new HashMap(); 
+				temp.put(t2.image, new STC("INTEGER", t2.image));} 
+				#InicVar))?  
+		<PVIRG>
+
+ 
+  
 }
 
 void Function() #void : {Token t0; Token t1; Token t2;}
