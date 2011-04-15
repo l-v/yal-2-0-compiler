@@ -1,0 +1,26 @@
+
+module wfv_2
+{
+
+ function s = zeros(a[])
+ {
+   i = 0;
+   while(i < a.size) {
+      a[i] = 0;
+      i = i + 1;
+   }
+
+   s = a.size;
+ }
+
+
+ function main()
+ {
+
+   a = [3];
+   size_a = zeros(a);
+
+   io.println("numero de elementos de a: ",size_a); // result= 3
+
+ }
+}

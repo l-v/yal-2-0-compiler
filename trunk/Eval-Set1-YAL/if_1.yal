@@ -1,0 +1,33 @@
+module if_1
+{
+
+function c=f1(a, b) {
+    c = 0;
+    if(a == b) {
+		 c = 1;
+    }
+}
+
+function c=f2(a, b) {
+    c = 0;
+    if(a != b) {
+		 c = 1;
+    }
+}
+
+function main()
+{
+ c=f1(2,12);
+ io.println(c); // result = 0
+
+ c=f1(4,4);
+ io.println(c); // result = 1
+
+ c=f2(2,12);
+ io.println(c); // result = 1
+
+ c=f2(4,4);
+ io.println(c); // result = 0
+}
+
+}

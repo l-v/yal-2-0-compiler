@@ -1,0 +1,24 @@
+
+module fv_1
+{
+
+ function t = f(a[])
+ {
+   a[0] = 10;
+   a[1] = 2;
+   a[2] = 3;
+
+   t = a[0];
+   t = t + a[1];
+   t = t + a[2];
+ }
+
+ function main()
+ {
+   a = [3];
+
+   r = f(a);
+
+   io.println(r); // result= 15
+ }
+}

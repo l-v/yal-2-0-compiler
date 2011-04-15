@@ -1,0 +1,32 @@
+
+module all_3
+{
+
+
+  function print_array(a[], N)
+  {
+   i=0;
+   while(i < N) {
+      ai=a[i];
+	  io.print("a: ",ai);
+	  io.println();
+	  i=i+1;
+   }
+  }
+
+  function main()
+  {
+   N = 10;
+   a=[N];
+
+
+   i=0;
+   while(i < N)
+   {
+   	a[i] = i;
+	i=i+1;
+   }
+
+	 print_array(a, N);
+  }
+}

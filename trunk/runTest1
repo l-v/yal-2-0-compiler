@@ -1,0 +1,5 @@
+
+echo -e '\n===firstTest===\n'
+cat firstTest.yal
+echo -e '\n\n::::'
+cat firstTest.yal | java yal2jvm

@@ -1,0 +1,153 @@
+
+
+echo -e '\n===a==='
+read
+echo -e '\n-a_1-\n'
+cat ./Eval-Set1-YAL/a_1.yal | java yal2jvm
+echo -e '\n-a_2--\n'
+cat ./Eval-Set1-YAL/a_2.yal | java yal2jvm
+echo -e '\n-a_3--\n'
+cat ./Eval-Set1-YAL/a_3.yal | java yal2jvm
+echo -e '\n'
+
+
+echo -e '\n===all==='
+read
+echo -e '\n-all_1-\n'
+cat ./Eval-Set1-YAL/all_1.yal | java yal2jvm
+echo -e '\n-all_2--\n'
+cat ./Eval-Set1-YAL/all_2.yal | java yal2jvm
+echo -e '\n-all_3--\n'
+cat ./Eval-Set1-YAL/all_3.yal | java yal2jvm
+echo -e '\n-all_4--\n'
+cat ./Eval-Set1-YAL/all_4.yal | java yal2jvm
+echo -e '\n-all_5--\n'
+cat ./Eval-Set1-YAL/all_5.yal | java yal2jvm
+echo -e '\n'
+
+
+echo -e '\n===av==='
+read
+echo -e '\n-av_1--\n'
+cat ./Eval-Set1-YAL/av_1.yal | java yal2jvm
+echo -e '\n-av_2--\n'
+cat ./Eval-Set1-YAL/av_2.yal | java yal2jvm
+
+
+echo -e '\n===f==='
+read
+echo -e '\n-f_1--\n'
+cat ./Eval-Set1-YAL/f_1.yal | java yal2jvm
+echo -e '\n-f_2--\n'
+cat ./Eval-Set1-YAL/f_2.yal | java yal2jvm
+echo -e '\n-f_3--\n'
+cat ./Eval-Set1-YAL/f_3.yal | java yal2jvm
+
+
+echo -e '\n===fv==='
+read
+echo -e '\n-fv_1--\n'
+cat ./Eval-Set1-YAL/fv_1.yal | java yal2jvm
+echo -e '\n-fv_2--\n'
+cat ./Eval-Set1-YAL/fv_2.yal | java yal2jvm
+echo -e '\n-fv_3--\n'
+cat ./Eval-Set1-YAL/fv_3.yal | java yal2jvm
+
+
+echo -e '\n===i==='
+read
+echo -e '\n-i_1--\n'
+cat ./Eval-Set1-YAL/i_1.yal | java yal2jvm
+echo -e '\n-i_2--\n'
+cat ./Eval-Set1-YAL/i_2.yal | java yal2jvm
+echo -e '\n-i_3--\n'
+cat ./Eval-Set1-YAL/i_3.yal | java yal2jvm
+echo -e '\n-i_4--\n'
+cat ./Eval-Set1-YAL/i_4.yal | java yal2jvm
+
+echo -e '\n===if==='
+read
+echo -e '\n-if_1--\n'
+cat ./Eval-Set1-YAL/if_1.yal | java yal2jvm
+echo -e '\n-if_2--\n'
+cat ./Eval-Set1-YAL/if_2.yal | java yal2jvm
+echo -e '\n-if_3--\n'
+cat ./Eval-Set1-YAL/if_3.yal | java yal2jvm
+echo -e '\n-if_4--\n'
+cat ./Eval-Set1-YAL/if_4.yal | java yal2jvm
+
+echo -e '\n===iw==='
+read
+echo -e '\n-iw_1--\n'
+cat ./Eval-Set1-YAL/iw_1.yal | java yal2jvm
+echo -e '\n-iw_2--\n'
+cat ./Eval-Set1-YAL/iw_2.yal | java yal2jvm
+echo -e '\n-iw_3--\n'
+cat ./Eval-Set1-YAL/iw_3.yal | java yal2jvm
+
+echo -e '\n===iwafv==='
+read
+echo -e '\n-iwafv_1--\n'
+cat ./Eval-Set1-YAL/iwafv_1.yal | java yal2jvm
+
+echo -e '\n===iwf==='
+read
+echo -e '\n-iwf_1--\n'
+cat ./Eval-Set1-YAL/iwf_1.yal | java yal2jvm
+echo -e '\n-iwf_2--\n'
+cat ./Eval-Set1-YAL/iwf_2.yal | java yal2jvm
+echo -e '\n-iwf_3--\n'
+cat ./Eval-Set1-YAL/iwf_3.yal | java yal2jvm
+echo -e '\n-iwf_4--\n'
+cat ./Eval-Set1-YAL/iwf_4.yal | java yal2jvm
+
+echo -e '\n===iwfv==='
+read
+echo -e '\n-iwfv_1--\n'
+cat ./Eval-Set1-YAL/iwfv_1.yal | java yal2jvm
+
+echo -e '\n===rec_fact==='
+read
+echo -e '\n-rec_fact_1--\n'
+cat ./Eval-Set1-YAL/rec_fact_1.yal | java yal2jvm
+echo -e '\n-rec_fact_2--\n'
+cat ./Eval-Set1-YAL/rec_fact_2.yal | java yal2jvm
+
+echo -e '\n===v==='
+read
+echo -e '\n-v_1--\n'
+cat ./Eval-Set1-YAL/v_1.yal | java yal2jvm
+echo -e '\n-v_2--\n'
+cat ./Eval-Set1-YAL/v_2.yal | java yal2jvm
+
+echo -e '\n===w==='
+read
+echo -e '\n-w_1--\n'
+cat ./Eval-Set1-YAL/w_1.yal | java yal2jvm
+echo -e '\n-w_2--\n'
+cat ./Eval-Set1-YAL/w_2.yal | java yal2jvm
+echo -e '\n-w_3--\n'
+cat ./Eval-Set1-YAL/w_3.yal | java yal2jvm
+echo -e '\n-w_4--\n'
+cat ./Eval-Set1-YAL/w_4.yal | java yal2jvm
+
+echo -e '\n===wf==='
+read
+echo -e '\n-wf_1--\n'
+cat ./Eval-Set1-YAL/wf_1.yal | java yal2jvm
+echo -e '\n-wf_2--\n'
+cat ./Eval-Set1-YAL/wf_2.yal | java yal2jvm
+
+echo -e '\n===wfv==='
+read
+echo -e '\n-wfv_1--\n'
+cat ./Eval-Set1-YAL/wfv_1.yal | java yal2jvm
+echo -e '\n-wfv_2--\n'
+cat ./Eval-Set1-YAL/wfv_2.yal | java yal2jvm
+echo -e '\n-wfv_3--\n'
+cat ./Eval-Set1-YAL/wfv_3.yal | java yal2jvm
+echo -e '\n-wfv_4--\n'
+cat ./Eval-Set1-YAL/wfv_4.yal | java yal2jvm
+echo -e '\n-wfv_5--\n'
+cat ./Eval-Set1-YAL/wfv_5.yal | java yal2jvm
+

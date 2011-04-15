@@ -1,0 +1,2 @@
+numero de elementos de a: 3
+soma dos elementos de a: 0

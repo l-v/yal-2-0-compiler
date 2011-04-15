@@ -1,0 +1,42 @@
+module iwafv_1 {
+
+	data=[100]; // vector of 100 integers
+	mx; // attribute mx
+	mn; // attribute mn
+
+function init(d[], N) {
+	i=0;
+	while(i<N) {
+		d[i] = 0;
+		i = i+1;
+	}
+	d[0] = 3;
+	d[99] = 100;
+	d[23] = -1;
+}
+
+function det(d[], N) {
+	i=0;
+	M=N;
+	mx = -2147483648;
+	mn = 2147483647;
+	while(i<M) {
+		a=d[i];
+		i=i+1;
+		if(mx < a) {mx = a;}
+		if(mn > a) {mn = a;}
+	}
+}
+
+function main() {
+
+
+	init(data, 100);
+
+	det(data, 100);
+
+	io.println("max: ",mx);   // 100
+	io.println("min: ",mn);   // -1
+}
+}
+

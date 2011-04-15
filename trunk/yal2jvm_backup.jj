@@ -1,0 +1,277 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.17+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  JDK_VERSION = "1.5";
+  static = true;
+  LOOKAHEAD = 1;
+}
+
+PARSER_BEGIN(yal2jvm)
+
+// código Java que invoca o parser
+  public class yal2jvm {
+     public static void main(String args[]) throws ParseException {
+       // criação do objecto utilizando o constructor com argumento para
+       // ler do standard input (teclado)
+       yal2jvm newParser = new yal2jvm(System.in);
+       newParser.Module();
+     }
+  }
+PARSER_END(yal2jvm)
+
+// símbolos que não devem ser considerados na análise
+<DEFAULT> SKIP : { 
+  	 " "  
+	| "\t"
+	| "\n"
+	| "\r"
+	| <"//" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
+	| < "*/" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/" >
+}
+
+// definição dos tokens (símbolos terminais)
+<DEFAULT> TOKEN : {
+	<RELA_OP: ">" | "<" | "<=" | ">=" | "==" | "!=">
+	| <ADDSUB_OP: "+" | "-">
+	| <ARITH_OP: "*" | "/" | "<<" | ">>" | ">>>">
+	| <BITWISE_OP: "&" | "|" | "^">
+	| <NOT_OP: "!">
+	| <WHILE: "while">
+	| <IF: "if">
+	| <ELSE: "else">
+	| <ASSIGN: "=">
+	| <ASPA: "\"">
+	| <LPAR: "(">
+	| <RPAR: ")">
+	| <VIRG: ",">
+	| <PVIRG: ";">
+	| <LCHAVETA: "{">
+	| <RCHAVETA: "}">
+	| <FUNCTION: "function">
+	| <MODULE: "module">
+	| <SIZE: "size">
+	
+}
+
+// definição da produção
+<DEFAULT> TOKEN : {
+<INTEGER: (<DIGIT>)+>
+	| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
+	| <#LETTER: ["$","A"-"Z","_","a"-"z"]>
+	| <#DIGIT: ["0"-"9"]>
+	| <STRING: "\"" (["a"-"z","A"-"Z","0"-"9",":"," ","="])+ "\"">
+}
+
+
+
+
+
+
+
+
+
+
+void Module() : {}
+{
+  <MODULE> <ID> <LCHAVETA>
+  (Declaration() )* 
+  (Function() )*
+  <RCHAVETA>
+}
+
+
+void Declaration() : {}
+{
+  <ID> ("[" "]")? // (ArrayElement() | ScalarElement())
+  (<ASSIGN> (("[" ArraySize() "]")
+	      | (<ADDSUB_OP>)? <INTEGER>))? <PVIRG>
+}
+
+void Function() : {}
+{
+  /*
+  ((<FUNCTION> ( <ID> ("[" "]") ArrayElement() | ScalarElement()) 
+   <ASSIGN> <ID> <LPAR> 
+      (Varlist())? <RPAR>)
+  |
+  (<FUNCTION> <ID> <LPAR> (Varlist())? <RPAR>))
+  
+  <LCHAVETA> Stmtlst() <RCHAVETA>
+  */
+  
+  (LOOKAHEAD(3) (<FUNCTION> ( <ID> ("[" "]") <ID> ("[" "]")?) 
+   <ASSIGN> <ID> <LPAR> 
+      (Varlist())? <RPAR>)
+  |
+  (<FUNCTION> <ID> <LPAR> (Varlist())? <RPAR>))
+  
+  <LCHAVETA> Stmtlst() <RCHAVETA>
+  
+}
+      
+void Varlist() : {}
+{
+    //(ArrayElement() | ScalarElement()) ( <VIRG> (ArrayElement() | ScalarElement() ) )*
+    
+    (<ID> ("[" "]")?) ( <VIRG> <ID> ("[" "]")? )*
+}
+
+
+
+
+
+
+void ArrayElement() : {}
+{
+  <ID> "[" "]"
+}
+
+void ScalarElement() : {}
+{
+  <ID>
+}
+
+void Stmtlst() : {}
+{
+  ( Stmt() )*
+}
+
+void Stmt() : {}
+{
+  //While() | If() | Assign() | Call() <PVIRG>
+  While() | If() | (LOOKAHEAD(3) Assign() | Call() <PVIRG>)
+}
+
+void Assign() : {}
+{
+  Lhs() <ASSIGN> Rhs() <PVIRG> 
+}
+
+
+void Lhs() : {}
+{
+ //ArrayAccess() | ScalarAccess()
+ <ID> ( ("[" Index() "]") | ("." < SIZE >)? )
+}
+
+void Rhs() : {}
+{
+ (Term() (( <ARITH_OP> | <BITWISE_OP> | <ADDSUB_OP> ) Term() )? )
+}
+
+
+void ArraySize() : {} 
+{
+ ScalarAccess() | <INTEGER>
+}
+
+void Term() : {}
+{
+  //( <ADDSUB_OP> )? (<INTEGER> | LOOKAHEAD(3) Call() | LOOKAHEAD(2) ArrayAccess() | ScalarAccess())
+ 
+ //( <ADDSUB_OP> )? (<INTEGER> | <ID> ("[" "]" | ("." < ID >)? < LPAR > (ArgumentList())? < RPAR >))
+ 
+ (<ADDSUB_OP> )? (<INTEGER> | LOOKAHEAD(3) Call() |  <ID> ( ("[" Index() "]") | ("." <SIZE>)? ))
+}
+
+void Exprtest() : {}
+{
+   <LPAR> Lhs() <RELA_OP> Rhs() <RPAR>
+}
+
+void While() : {}
+{
+  <WHILE> Exprtest() <LCHAVETA> Stmtlst() <RCHAVETA>
+}
+
+void If() : {}
+{
+  < IF > Exprtest() <LCHAVETA > Stmtlst() <RCHAVETA > (
+  < ELSE > <LCHAVETA > Stmtlst() <RCHAVETA >)?
+}
+
+
+void Call() : {}
+{
+  < ID > ("." < ID >)? < LPAR > (ArgumentList())? < RPAR >
+}
+
+void ArgumentList() : {}
+{
+  Argument() (< VIRG > Argument())*
+}
+
+void Argument() : {}
+{
+   (< ID > | < STRING > | < INTEGER >)
+}
+
+void ArrayAccess() : {}
+{
+  < ID > "[" Index() "]"
+}
+
+void ScalarAccess() : {}
+{
+  <ID> ("." < SIZE >)?    
+}
+
+void Index() : {}
+{
+  <ID> | <INTEGER> 
+}
+  
+
+
+
+/*
+void Parser() : {}
+{
+	Index() | ScalarAccess() | ArrayAccess()
+}
+*/
+
+/*
+void Aritm() : {Token t1, t2, op;}
+{
+  /*
+  t1=<INTEGER> {
+    System.out.println("Integer= "+t1.image);
+  }
+  
+  (op=<OPERATOR> {
+    System.out.println("Operator= "+op.image);
+  }
+
+  t2=<INTEGER> {
+    System.out.println("Integer= "+t2.image);
+  } )? <LF> // "(...)?" é equivalente a "[...]"
+}
+*/
+
+/* programa teste */
+/*
+
+module programa1 {
+data=[100]; // vector of 100 integers
+mx; // attribute mx
+mn; // attribute mn
+function det(d[]) { // N = size(d)
+i=0;
+M=d.size-1; // d.size equivales to d.length (Java)
+while(i<M) { // version not optimized!
+a=d[i]; i=i+1; b=d[i];
+mx= library1.max(a,b);
+mn= library1.min(a,b);
+}
+}
+function main() {
+det(data);
+io.println("max: ",mx);
+io.println("min: ",mn);
+}
+}
+
+*/

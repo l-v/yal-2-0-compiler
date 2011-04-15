@@ -1,0 +1,16 @@
+
+module w_2
+{
+
+function main()
+{
+ c = 0;
+ a = 5;
+ b = 1;
+ while(c < a) {
+	c = c+b;
+ }
+ io.println(c); // result= 5
+}
+
+}

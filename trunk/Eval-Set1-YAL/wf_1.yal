@@ -1,0 +1,18 @@
+
+module wf_1
+{
+
+function c = f(a) {
+    c = 0;
+    while(c < a) {
+			c = a+c;
+    }
+}
+
+function main()
+{
+ c=f(5);
+ io.println(c); // result= 5
+}
+
+}

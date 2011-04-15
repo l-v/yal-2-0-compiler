@@ -1,0 +1,24 @@
+
+module rec_fact_1
+{
+
+ function t=fact(N)
+ {
+   t = 1;
+   if(N > 0) {
+   		N1 = N-1;
+   		t=N*fact(N1);
+   }
+ }
+
+ function main()
+ {
+
+   N = 4;
+
+   t = fact(N);
+
+   io.print("factorial ",N);
+   io.println(" = ",t);
+ }
+}
