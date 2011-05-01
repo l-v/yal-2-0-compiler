@@ -18,89 +18,6 @@ import java.util.*;
   public class yal2jvm{
 
 	public static SymbolTable ST = new SymbolTable();
-	/*
-	public class SymbolTable extends Object {
-
-
-	  String type;  //tipo funcao
-	   String value; //nome funcao
-	   LinkedList<SymbolTable> functions = new LinkedList<SymbolTable>();
-	   HashMap<String, String> localVars = new HashMap<String, String>(); // variaveis dento de modulo/funcao
-
-	  public SymbolTable() {
-	    functions = new LinkedList<SymbolTable>();
-	    localVars = new HashMap<String, String>();
-
-	  }
-	  
-	  public SymbolTable(String itype, String ivalue) {
-	    
-	    type=itype;
-	    value=ivalue;
-	    
-	    functions = new LinkedList<SymbolTable>();
-	    localVars = new HashMap<String, String>();
-
-	  }
-	  
-	  public  void defineMainVars(String itype, String ivalue) {
-	    type=itype;
-	    value=ivalue;
-	  }
-	  
-	  public void addEntry(String type, String value) {
-	    localVars.put(type, value);
-	  }
-	  
-	  public void addFunc(SymbolTable newFunc) {
-	    functions.add(newFunc);
-	  }
-	  
-	  public void addFunc(String type, String value) {
-	    SymbolTable newFunc = new SymbolTable(type, value);
-	    functions.add(newFunc);
-	  }
-	  
-	  public int addToEnd(SymbolTable newFunc) {
-	    
-	    if (functions.size()==0)
-	      return -1;
-
-	    functions.getLast().addFunc(newFunc);
-	    return 1;
-	  }
-	 
-	 
-	 // Procura na LinkedList functions por uma funcao de nome/valor 'value'  
-	  public int getListIndex(String funcValue) {
-	    for(int i=0; i!=functions.size(); i++) {
-	      if (funcValue.equals(functions.get(i).value))
-		return i;
-	    
-	    }
-	    
-	    return -1;
-	  }
-	 
-	 // Insere uma nova funcao (newFunc) dentro de uma funcao especifica (parentFunc) 
-	  public int insertIntoFunc(SymbolTable parentFunc, SymbolTable newFunc) {
-	    return 0;
-	  }
-	  
-	  public void printST() {
-	    System.out.println("Type: " + type + "\nValue: " + value);
-	    /*
-	    Iterator iterator = localVars.keySet().iterator();  
-	    while (iterator.hasNext()) {  
-		String key = iterator.next().toString();  
-		String value = localVars.get(key).toString();  
-      
-		System.out.println(key + " " + value);  
-	    }  *//*
-	  
-	  }
-
-	}*/
 
 	public static void main(String args[]) throws ParseException {
 
@@ -232,25 +149,13 @@ void Declaration() #void : {Token t0; Token t1; Token t2;}
 				#InicVar))?  
 		<PVIRG>
 		
-  {ST.addFunc("Declaration", t0.image);
+  {ST.addEntry(t0.image, "Declaration");
   }
 }
 
 
 void Function() #void : {Token t0; Token t1; Token t2;}
 {
-  /*
-  ((<FUNCTION> ( <ID> ("[" "]") ArrayElement() | ScalarElement()) 
-   <ASSIGN> <ID> <LPAR> func nome[] = nome2(args);
-      (Varlist())? <RPAR>)
-  |
-  (<FUNCTION> <ID> <LPAR> (Varlist())? <RPAR>))
-  
-  <LCHAVETA> Stmtlst() <RCHAVETA>
-  */
-  
-  
-  /*THIS ONE! */
   (<FUNCTION> (t0=<ID> {jjtThis.val = t0.image;} #FuncID)
     (
     (( "[" "]")?
@@ -261,21 +166,10 @@ void Function() #void : {Token t0; Token t1; Token t2;}
   )
   
   <LCHAVETA> Stmtlst() #FuncBody <RCHAVETA>
-  /*
-  {SymbolTable temp = new SymbolTable("Function", t0.image);
-   ST.addFunc(temp); }
-  */
   
+  {ST.addFunc(t0.image, "Function");
+  }
   
-  /*
-  (LOOKAHEAD(3) (<FUNCTION> ( <ID> ("[" "]") <ID> ("[" "]")?) 
-   <ASSIGN> <ID> <LPAR> 
-      (Varlist())? <RPAR>)
-  |
-  (<FUNCTION> <ID> <LPAR> (Varlist())? <RPAR>))
-  
-  <LCHAVETA> Stmtlst() <RCHAVETA>
-  */
 }
       
 void Varlist() #void : {Token t0; Token t1;}

@@ -79,7 +79,7 @@ public class SymbolTable extends Object {
 	  // print local vars
 	  public void printST(String spacing) {
 
-	    System.out.println(spacing + "Type: " + type + "\n" + spacing + "Value: " + value 
+	    System.out.println(spacing + type + " : " + value 
 				+ "\n" + spacing + "-localVars: " + localVars.size()
 				+ ";\t childFuncs: " + functions.size());
 	    
