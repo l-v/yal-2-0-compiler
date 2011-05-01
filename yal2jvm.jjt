@@ -15,45 +15,116 @@ PARSER_BEGIN(yal2jvm)
 import java.util.*;
 
 // código Java que invoca o parser
-  public class yal2jvm {
+  public class yal2jvm{
 
-	public static HashMap ST = new HashMap();
+	public static SymbolTable ST = new SymbolTable();
+	/*
+	public class SymbolTable extends Object {
 
-	public static class STC extends Object {
 
+	  String type;  //tipo funcao
+	   String value; //nome funcao
+	   LinkedList<SymbolTable> functions = new LinkedList<SymbolTable>();
+	   HashMap<String, String> localVars = new HashMap<String, String>(); // variaveis dento de modulo/funcao
 
-	  String type;  // type,in calculator expample there only is one type==> Int.
-	  String value; // value, the value in here is a string not a integer value.
-
-	  public STC(String itype, String ivalue) {
-	    type=itype;
-	    value=ivalue;
+	  public SymbolTable() {
+	    functions = new LinkedList<SymbolTable>();
+	    localVars = new HashMap<String, String>();
 
 	  }
-	}
+	  
+	  public SymbolTable(String itype, String ivalue) {
+	    
+	    type=itype;
+	    value=ivalue;
+	    
+	    functions = new LinkedList<SymbolTable>();
+	    localVars = new HashMap<String, String>();
+
+	  }
+	  
+	  public  void defineMainVars(String itype, String ivalue) {
+	    type=itype;
+	    value=ivalue;
+	  }
+	  
+	  public void addEntry(String type, String value) {
+	    localVars.put(type, value);
+	  }
+	  
+	  public void addFunc(SymbolTable newFunc) {
+	    functions.add(newFunc);
+	  }
+	  
+	  public void addFunc(String type, String value) {
+	    SymbolTable newFunc = new SymbolTable(type, value);
+	    functions.add(newFunc);
+	  }
+	  
+	  public int addToEnd(SymbolTable newFunc) {
+	    
+	    if (functions.size()==0)
+	      return -1;
+
+	    functions.getLast().addFunc(newFunc);
+	    return 1;
+	  }
+	 
+	 
+	 // Procura na LinkedList functions por uma funcao de nome/valor 'value'  
+	  public int getListIndex(String funcValue) {
+	    for(int i=0; i!=functions.size(); i++) {
+	      if (funcValue.equals(functions.get(i).value))
+		return i;
+	    
+	    }
+	    
+	    return -1;
+	  }
+	 
+	 // Insere uma nova funcao (newFunc) dentro de uma funcao especifica (parentFunc) 
+	  public int insertIntoFunc(SymbolTable parentFunc, SymbolTable newFunc) {
+	    return 0;
+	  }
+	  
+	  public void printST() {
+	    System.out.println("Type: " + type + "\nValue: " + value);
+	    /*
+	    Iterator iterator = localVars.keySet().iterator();  
+	    while (iterator.hasNext()) {  
+		String key = iterator.next().toString();  
+		String value = localVars.get(key).toString();  
+      
+		System.out.println(key + " " + value);  
+	    }  *//*
+	  
+	  }
+
+	}*/
 
 	public static void main(String args[]) throws ParseException {
 
-	String temp;
-	STC    temp2;
-
-
-
-       // criação do objecto utilizando o constructor com argumento para
-       // ler do standard input (teclado)
-       yal2jvm newParser = new yal2jvm(System.in);
-      // newParser.Module();
-
-	// symbol table
 	
 
-           
-      SimpleNode root = newParser.parserBegin(); //devolve referência para o nó raiz da árvore
-    //  System.out.println("Valor da expressão: "+myCalc.eval(root));
-      root.dump("");
+
+	  // criação do objecto utilizando o constructor com argumento para
+	  // ler do standard input (teclado)
+	  yal2jvm newParser = new yal2jvm(System.in);
+	  // newParser.Module();
+
+	// symbol table
+	//ST = new SymbolTable();
+
+        
+	SimpleNode root = newParser.parserBegin(); //devolve referência para o nó raiz da árvore
+	//  System.out.println("Valor da expressão: "+myCalc.eval(root));
+	root.dump("");
+     
+	newParser.ST.printST();
      
 
 	// print symbol table
+	/*
     Iterator t = ST.keySet().iterator();
 
 
@@ -67,7 +138,7 @@ import java.util.*;
           if ( temp2.value != null )
             System.out.println(" value = " + temp2.value);
 
-    }
+    }*/
 
 	}
   }
@@ -135,7 +206,9 @@ void Module() #void : {Token t0;}
   arvore: 3: MID Decl Func;
   falta os valores*/
   
-  <MODULE> t0=<ID> {jjtThis.val = t0.image; ST.put(t0.image, new STC("ID",t0.image));} #MID
+  <MODULE> t0=<ID> {jjtThis.val = t0.image; 
+		   ST.defineMainVars("ID", t0.image);
+		   } #MID
   <LCHAVETA>
   (Declaration() #Decl)* 
   (Function() #Func)*
@@ -148,19 +221,21 @@ void Module() #void : {Token t0;}
 
 void Declaration() #void : {Token t0; Token t1; Token t2;}
 {
-  t0=<ID> {jjtThis.val = t0.image; HashMap temp = new HashMap(); temp.put(t0.image, new STC("ID",t0.image));} #DeclID ["[" "]"] // (ArrayElement() | ScalarElement())
+  t0=<ID> {jjtThis.val = t0.image;} 
+	  #DeclID ["[" "]"] 
   (<ASSIGN> (("[" ArraySize() #ArraySize "]")
 	      | (t1=<ADDSUB_OP> {jjtThis.val = t1.image; 
-				HashMap temp = new HashMap(); temp.put(t1.image, new STC("AddSubOP", t1.image));} 
+				/*HashMap temp = new HashMap(); temp.put(t1.image, new STC("AddSubOP", t1.image));*/} 
 				#AddSubOP)? 
 		t2=<INTEGER> {jjtThis.val = t2.image; HashMap temp = new HashMap(); 
-				temp.put(t2.image, new STC("INTEGER", t2.image));} 
+				/*temp.put(t2.image, new STC("INTEGER", t2.image));*/} 
 				#InicVar))?  
 		<PVIRG>
-
- 
-  
+		
+  {ST.addFunc("Declaration", t0.image);
+  }
 }
+
 
 void Function() #void : {Token t0; Token t1; Token t2;}
 {
@@ -186,7 +261,10 @@ void Function() #void : {Token t0; Token t1; Token t2;}
   )
   
   <LCHAVETA> Stmtlst() #FuncBody <RCHAVETA>
-  
+  /*
+  {SymbolTable temp = new SymbolTable("Function", t0.image);
+   ST.addFunc(temp); }
+  */
   
   
   /*
