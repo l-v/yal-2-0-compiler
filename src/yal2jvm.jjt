@@ -17,7 +17,7 @@ import java.util.*;
 // código Java que invoca o parser
   public class yal2jvm{
 
-	public static SymbolTable ST = new SymbolTable();
+	//public static SymbolTable ST = new SymbolTable();
 
 	public static void main(String args[]) throws ParseException {
 
@@ -34,10 +34,10 @@ import java.util.*;
 
         
 	SimpleNode root = newParser.parserBegin(); //devolve referência para o nó raiz da árvore
-	//  System.out.println("Valor da expressão: "+myCalc.eval(root));
+	SymbolTable ST = new SymbolTable(root);
 	root.dump("");
      
-	newParser.ST.printST();
+	ST.printTable();
      
 
 	// print symbol table
@@ -124,18 +124,20 @@ void Module() #void : {Token t0;}
   falta os valores*/
   
   <MODULE> t0=<ID> {jjtThis.val = t0.image; 
-		   ST.defineMainVars("ID", t0.image);
 		   } #MID
   <LCHAVETA>
   (Declaration() #Decl)* 
   (Function() #Func)*
   <RCHAVETA>
 
+  {//ST.editTable(t0.image, "MID");
+  }
 
 
 }
 
 
+// A declaration can only be an INT or INT[]
 void Declaration() #void : {Token t0; Token t1; Token t2;}
 {
   t0=<ID> {jjtThis.val = t0.image;} 
@@ -148,12 +150,9 @@ void Declaration() #void : {Token t0; Token t1; Token t2;}
 				/*temp.put(t2.image, new STC("INTEGER", t2.image));*/} 
 				#InicVar))?  
 		<PVIRG>
-		
-  {ST.addEntry(t0.image, "Declaration");
-  }
 }
 
-
+// function(VarList) {} || function=nome(VarList) {} || function[]=nome(VarList)
 void Function() #void : {Token t0; Token t1; Token t2;}
 {
   (<FUNCTION> (t0=<ID> {jjtThis.val = t0.image;} #FuncID)
@@ -166,17 +165,14 @@ void Function() #void : {Token t0; Token t1; Token t2;}
   )
   
   <LCHAVETA> Stmtlst() #FuncBody <RCHAVETA>
-  
-  {ST.addFunc(t0.image, "Function");
-  }
-  
+
 }
-      
+
+
+// melhorar identificacao de array
 void Varlist() #void : {Token t0; Token t1;}
 {
-    //(ArrayElement() | ScalarElement()) ( <VIRG> (ArrayElement() | ScalarElement() ) )*
-    
-    ((t0=<ID> {jjtThis.val=t0.image;} #VarListID) ("[" "]")?) ( <VIRG> (t1=<ID> {jjtThis.val=t1.image;} #VarListID2) ("[" "]")? )*
+  ((t0=<ID> {jjtThis.val=t0.image;} #VarListID) ("[" "]" #IsArray)?) ( <VIRG> (t1=<ID> {jjtThis.val=t1.image;} #VarListID) ("[" "]" #IsArray)? )*
 }
 
 
@@ -242,16 +238,6 @@ void ArraySize() #void : {Token tSize;}
 
 void Term() #void: {Token tInt; Token t0; Token t1; Token tSize; Token tOp;}
 {
-  //  ( <ADDSUB_OP> )? ( <INTEGER> | Call() | ArrayAccess() | ScalarAccess() )
-
- // ( <ADDSUB_OP> )? (<INTEGER> | LOOKAHEAD(3) Call() | LOOKAHEAD(2) ArrayAccess() | ScalarAccess())
- 
- //( <ADDSUB_OP> )? (<INTEGER> | <ID> ("[" "]" | ("." < ID >)? < LPAR > (ArgumentList())? < RPAR >))
- 
-  //(<ADDSUB_OP> )? (<INTEGER> | LOOKAHEAD(3) Call() | ( <ID> ( ("[" Index() "]") | ("." <SIZE>)? )))
-
- 
-
  (tOp=<ADDSUB_OP> {jjtThis.val = tOp.image;} #AddSubOP)? (tInt=<INTEGER> {jjtThis.val=tInt.image;} #INTEGER | ( (t0=<ID> {jjtThis.val=t0.image;} #ID)
 		 ( LOOKAHEAD(2) (("." (t1=< ID > {jjtThis.val=t1.image;} #ID2))? < LPAR > (ArgumentList() #ArgList)? < RPAR >)
 		| ( ("[" Index() /*#Index*/ "]") | ("." tSize=<SIZE> {jjtThis.val=tSize.image;} #Size)? ))
@@ -307,53 +293,3 @@ void Index() : {Token t0;}
   
 
 
-
-/*
-void Parser() : {}
-{
-	Index() | ScalarAccess() | ArrayAccess()
-}
-*/
-
-/*
-void Aritm() : {Token t1, t2, op;}
-{
-  /*
-  t1=<INTEGER> {
-    System.out.println("Integer= "+t1.image);
-  }
-  
-  (op=<OPERATOR> {
-    System.out.println("Operator= "+op.image);
-  }
-
-  t2=<INTEGER> {
-    System.out.println("Integer= "+t2.image);
-  } )? <LF> // "(...)?" é equivalente a "[...]"
-}
-*/
-
-/* programa teste */
-/*
-
-module programa1 {
-data=[100]; // vector of 100 integers
-mx; // attribute mx
-mn; // attribute mn
-function det(d[]) { // N = size(d)
-i=0;
-M=d.size-1; // d.size equivales to d.length (Java)
-while(i<M) { // version not optimized!
-a=d[i]; i=i+1; b=d[i];
-mx= library1.max(a,b);
-mn= library1.min(a,b);
-}
-}
-function main() {
-det(data);
-io.println("max: ",mx);
-io.println("min: ",mn);
-}
-}
-
-*/
