@@ -9,7 +9,7 @@ class SimpleNode implements Node {
   protected Object value;
   protected yal2jvm parser;
 
-  public String val;
+  public String val; // valor armazenado no nó
 
   public SimpleNode(int i) {
     id = i;
@@ -46,6 +46,11 @@ class SimpleNode implements Node {
 
   public int jjtGetNumChildren() {
     return (children == null) ? 0 : children.length;
+  }
+
+
+  public String getVal() {
+     return val;
   }
 
   public void jjtSetValue(Object value) { this.value = value; }
