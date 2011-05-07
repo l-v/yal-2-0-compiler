@@ -130,8 +130,6 @@ void Module() #void : {Token t0;}
   (Function() #Func)*
   <RCHAVETA>
 
-  {//ST.editTable(t0.image, "MID");
-  }
 
 
 }
@@ -143,11 +141,9 @@ void Declaration() #void : {Token t0; Token t1; Token t2;}
   t0=<ID> {jjtThis.val = t0.image;} 
 	  #DeclID ["[" "]"] 
   (<ASSIGN> (("[" ArraySize() #ArraySize "]")
-	      | (t1=<ADDSUB_OP> {jjtThis.val = t1.image; 
-				/*HashMap temp = new HashMap(); temp.put(t1.image, new STC("AddSubOP", t1.image));*/} 
+	      | (t1=<ADDSUB_OP> {jjtThis.val = t1.image;} 
 				#AddSubOP)? 
-		t2=<INTEGER> {jjtThis.val = t2.image; HashMap temp = new HashMap(); 
-				/*temp.put(t2.image, new STC("INTEGER", t2.image));*/} 
+		t2=<INTEGER> {jjtThis.val = t2.image;} 
 				#InicVar))?  
 		<PVIRG>
 }
@@ -273,7 +269,7 @@ void ArgumentList() #void : {}
 
 void Argument() : {Token tArg;}
 {
-   (tArg=< ID > #ArgID | tArg=< STRING > #STRING | tArg=< INTEGER > #INTEGER) {jjtThis.val = tArg.image;} // warning: see if this does not cause problems!!!
+   (tArg=< ID > #ArgID | tArg=< STRING > #STRING | tArg=< INTEGER > #INTEGER) {jjtThis.val = tArg.image;} 
 }
 
 void ArrayAccess() #void : {Token t0;}
@@ -288,7 +284,7 @@ void ScalarAccess() #void : {Token t0; Token tSize;}
 
 void Index() : {Token t0;}
 {
-  ( t0=<ID> #IndexID | t0=<INTEGER> #INTEGER) {jjtThis.val = t0.image;} //check if no problem with this!!!
+  ( t0=<ID> #IndexID | t0=<INTEGER> #INTEGER) {jjtThis.val = t0.image;} 
 }
   
 

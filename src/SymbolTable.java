@@ -93,7 +93,7 @@ public class SymbolTable extends Object {
 		addVar(DeclID.getVal(), "int");
 	  }
 
-	  /*** Adiciona um nó de funcao ***/
+	  /*** Adiciona um nó de funcao ***/ // FALTA VER RETORNO DE FUNCAO
 	  public void addFuncNode(Node node) {
 
 	     SymbolTable newTable = new SymbolTable("Func", this); 
@@ -135,9 +135,65 @@ public class SymbolTable extends Object {
 		      }
 		  }
 	     }
-  
-	     addTable(newTable);
 
+
+	     // passa nó com resto da funcao (stmtLst)
+	    Node stmtLst = (node.jjtGetChild(node.jjtGetNumChildren()-1)).jjtGetChild(0);
+	    addFuncBody(stmtLst, newTable);
+
+  
+	    // adiciona nova tabela à tabela de simbolos principal
+	    addTable(newTable);
+
+	  }
+
+
+	  /*** Processa corpo de uma funcao ***/ // FALTA VER EXPRESSOES DE TESTE
+	  public void addFuncBody(Node node, SymbolTable mainTable) {
+
+	     int numStmt = node.jjtGetNumChildren();
+	     for (int i=0; i!=numStmt; i++) {
+		  Node stmt = node.jjtGetChild(i);
+		 
+		  
+		  if (stmt.toString().equals("Assign")) {
+		      mainTable.addAssign(stmt, mainTable);
+		  }
+
+		  else if (stmt.toString().equals("While")) { // adiciona novo 'nivel' da tabela de simbolos
+		      SymbolTable newTable = new SymbolTable("While", mainTable);
+		      Node whileNode = stmt.jjtGetChild(1);
+		      addFuncBody(whileNode, newTable);
+		
+		      mainTable.addTable(newTable);
+		  }
+
+		  else if (stmt.toString().equals("If")) {
+		      SymbolTable newTable = new SymbolTable("If", mainTable);
+		      Node whileNode = stmt.jjtGetChild(1);
+		      addFuncBody(whileNode, newTable);
+		
+		      mainTable.addTable(newTable);
+		  }
+	     }
+
+
+	  }
+
+
+	  /*** Adiciona uma instrução de Assign ***/
+	  public void addAssign(Node node, SymbolTable table) {
+
+	     Node lhs = node.jjtGetChild(0);
+	    // System.out.println("==="+lhs.getVal());
+
+	     if (lhs.jjtGetNumChildren() !=0) {
+		table.addVar(lhs.getVal(), "int[]");
+	     }
+
+	     else {
+		table.addVar(lhs.getVal(), "int");
+	     }
 	  }
 
 	  /*** Edita atributos type e name ***/
