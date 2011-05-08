@@ -1,0 +1,12 @@
+
+
+echo -e '\n===f_call_iwfv_2g1==='
+read
+cat ./Eval-Set2-YAL/f_call_iwfv_2g1.yal | java yal2jvm
+echo -e '\n'
+
+
+echo -e '\n===iwfv_2g1==='
+read
+cat ./Eval-Set2-YAL/iwfv_2g1.yal | java yal2jvm
+echo -e '\n'

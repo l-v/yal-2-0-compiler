@@ -169,11 +169,21 @@ public class SymbolTable extends Object {
 		  }
 
 		  else if (stmt.toString().equals("If")) {
-		      SymbolTable newTable = new SymbolTable("If", mainTable);
-		      Node whileNode = stmt.jjtGetChild(1);
-		      addFuncBody(whileNode, newTable);
+		      
+
+		      for (int j=0; j!=stmt.jjtGetNumChildren(); j++) {
+
+			Node ifNode = stmt.jjtGetChild(j);
+			if (ifNode.toString().equals("Stmtlst")) {
+
+			  SymbolTable newTable = new SymbolTable("If", mainTable);
+			  addFuncBody(ifNode, newTable);
+
+			  mainTable.addTable(newTable);
+			}
+		      }
 		
-		      mainTable.addTable(newTable);
+		      
 		  }
 	     }
 

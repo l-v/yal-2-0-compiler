@@ -1,0 +1,16 @@
+module f_call_iwfv_2g1 {
+
+	// inicializa um array, ordena-o e imprime-o
+	function main() {
+        iwfv_2g1.run();
+
+        //there is no way to identify the type of arr without analysis of the module  iwfv_2g1
+	/*
+            arr = iwfv_2g1.initArray();
+	    iwfv_2g1.sort(arr);
+	    iwfv_2g1.printArray(arr);
+	*/
+	iwfv_2g1.run();
+	}
+
+}
