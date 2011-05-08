@@ -1,0 +1,91 @@
+module iwfv_2g1 {
+	
+
+	// inicializa um array com 9 elementos
+	function arr[] = initArray() {
+		arr = [9];
+		arr[0] = 1; arr[1] = 4; arr[2] = 7;
+		arr[3] = 8; arr[4] = 2; arr[5] = 5;
+		arr[6] = 6; arr[7] = 9; arr[8] = 3;
+	}
+
+
+	// compara dois inteiros.
+	// Devolve -1 se a < b, 1 se a > b ou 0 se a == b.
+	function m = compare(a, b) {
+		if(a < b) {
+			m = -1;
+		}
+		else {
+			if(a == b) {
+				m = 0;
+			}
+			else {
+				m = 1;
+			}
+		}
+	}
+
+	// troca os elementos do array arr na posicao i e j
+	function swap(arr[], i, j) {
+		temp = arr[i];
+		arr[i] = arr[j];
+		arr[j] = temp;
+	}
+
+		// ordena um array de inteiros usando o
+	// algoritmo selection sort. A funcao
+	// compare(a, b) e usada.
+	function sort(arr[]) {
+		i = 0;
+		while(i < arr.size) {
+			min = 999999;
+			best = -1;
+			j = i;
+			while(j < a.size) {
+				curr = arr[j];
+				comp = compare(curr, min);
+				if(comp == -1) {
+					min = curr;
+					best = j;
+				}
+				j = j + 1;
+			}
+			swap(arr, i, best);
+			i = i + 1;
+		}
+	}
+
+
+	// imprime um array
+	function printArray(arr[]) {
+		io.print("=");
+		if(arr.size > 0) {
+			val = arr[0];
+			io.print(val);
+			i = 1;
+			while(i < arr.size) {
+				val = arr[i];
+				io.print(" ");
+				io.print(val);
+				i = i + 1;
+			}
+		}
+		io.println("=");
+	}
+
+	// inicializa um array, ordena-o e imprime-o
+	function run() {
+		arr = initArray();
+		sort(arr);
+		printArray(arr);
+	}
+
+	// inicializa um array, ordena-o e imprime-o
+	function main() {
+		arr = initArray();
+		sort(arr);
+		printArray(arr);
+	}
+
+}
