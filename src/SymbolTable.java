@@ -228,19 +228,32 @@ public class SymbolTable extends Object {
 	  public void addAssign(Node node, SymbolTable table) {
 
 	     Node lhs = node.jjtGetChild(0);
+	     Node rhs = node.jjtGetChild(1);
 	    // System.out.println("==="+lhs.getVal());
 
 	     if (lhs.jjtGetNumChildren() !=0) {
 
-		//inserir tamanho array
+		//inserir tamanho array?
 		table.addVar(lhs.getVal(), "int[]");
-
-		
 	     }
 
 	     else {
 		table.addVar(lhs.getVal(), "int");
 	     }
+
+
+	    // verificacao semantica 
+	    Integer numTerms = rhs.jjtGetNumChildren();
+	    for (int i=0; i!=numTerms; i++) {
+	  
+		Node term = rhs.jjtGetChild(i);
+		if (term.toString().equals("Term")) {
+		      // assign tem variaveis: ver possiveis erros
+
+		}
+
+	    }
+	      
 	  }
 
 	  /*** Edita atributos type e name ***/
@@ -343,7 +356,7 @@ public class SymbolTable extends Object {
 	   /*** funcoes de ANALISE SEMANTICA ***/
 	  public Integer variableExists(String varName) {
 		
-	     
+	     /*
 	     for (int i=0; i!=localVars.size(); i++) {
 
 		  Variable var = localVars.get(i);
@@ -356,7 +369,7 @@ public class SymbolTable extends Object {
 	      }
 
 	      System.out.println("semantic error: line x, variable " + varName + " not declared");
-	      return -1;
+	      */return -1;
 
 	  }
 
@@ -367,6 +380,8 @@ public class SymbolTable extends Object {
 	  ***/
 	  public Boolean functionExists(String funcName, String callType) {
 	      
+	      
+
 	      for (int i=0; i!=childTables.size(); i++) {
 
 		  SymbolTable func = childTables.get(i);
@@ -376,6 +391,11 @@ public class SymbolTable extends Object {
 		      //checkReturnType
 		      if (callType.equalsIgnoreCase("call") && !func.returnType.equals("void")) {
 			  System.out.println("semantic error: line x, function " + funcName + " returns scalar");
+			  return false;
+		      }
+
+		      else if (callType.equalsIgnoreCase("assign") && func.returnType.equals("void")) {
+			  System.out.println("semantic error: line 10, function " + funcName + " returns void");
 			  return false;
 		      }
 
@@ -404,6 +424,8 @@ class Variable {
 	String name; 
 
 	Integer arraySize; // tamanho da variavel tipo array; valor -1 para var. escalares
+	//LinkedList<String> funcID; // id das funcoes necessarios para obter o valor da variavel
+	
 
 	public Variable(String vName, String vType) {
 	    type = vType;
