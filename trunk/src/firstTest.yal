@@ -1,4 +1,5 @@
 module programa1 {
+  // /* comment this way does not work */
   data=[100]; // vector of 100 integers
   mx; // attribute mx
   mn; // attribute mn
@@ -9,11 +10,26 @@ module programa1 {
       a=d[i]; i=i+1; b=d[i];
       mx= library1.max(a,b);
       mn= library1.min(a,b);
+      while(i!=a) {
+	minha=0;
+	m2=0;
+	m3[3]=9;
+      }
+
+      if(M!=a) {
+      var2=0;
+      var3=34;
+      }
+
+      else {
+      varELSE=0;
+      }
     }
   }
   function main() {
     det(data);
     io.println("max: ",mx);
     io.println("min: ",mn);
+    anotherVar=1;
    }
 }

@@ -8,12 +8,15 @@ public class SymbolTable extends Object {
 
 	  String type;  //tipo funcao
 	  String name; //nome funcao
+
 	  LinkedList<SymbolTable> childTables;
 	  SymbolTable parentTable;
 	  LinkedList<Variable> localVars;
-
+	  
 	  Boolean isFunc; //verdadeiro se esta tabela de simbolos esta associada a uma funcao
 	  LinkedList<Variable> funcArgs; //argumentos da funcao
+
+	  
 	 
  
 	  /*** Construtores ***/
@@ -170,13 +173,19 @@ public class SymbolTable extends Object {
 
 		  else if (stmt.toString().equals("If")) {
 		      
-
-		      for (int j=0; j!=stmt.jjtGetNumChildren(); j++) {
+		      int numStmtLst = stmt.jjtGetNumChildren();
+		      for (int j=0; j!=numStmtLst; j++) {
 
 			Node ifNode = stmt.jjtGetChild(j);
 			if (ifNode.toString().equals("Stmtlst")) {
 
-			  SymbolTable newTable = new SymbolTable("If", mainTable);
+			  // Distingue entre if/else
+			  String ifType="If";
+			  if (j==numStmtLst-1) {
+			     ifType="Else";
+			  }
+
+			  SymbolTable newTable = new SymbolTable(ifType, mainTable);
 			  addFuncBody(ifNode, newTable);
 
 			  mainTable.addTable(newTable);
