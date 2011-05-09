@@ -15,7 +15,7 @@ public class SymbolTable extends Object {
 
 	  Boolean isFunc; //verdadeiro se esta tabela de simbolos esta associada a uma funcao
 	  LinkedList<Variable> funcArgs; //argumentos da funcao
-
+	  String returnType;
 	  
 	 
  
@@ -88,7 +88,11 @@ public class SymbolTable extends Object {
 		for (int i=1; i!=node.jjtGetNumChildren(); i++) {
 		    
 		   if (node.jjtGetChild(i).toString().equals("ArraySize")) { 
-		      addVar(DeclID.getVal(), "int[]");
+
+		      Node arraySize = (node.jjtGetChild(i)).jjtGetChild(0);
+
+
+		      addVar(DeclID.getVal(), "int[]", arraySize.getVal());
 		      return;
 		   }
 		}
@@ -107,14 +111,24 @@ public class SymbolTable extends Object {
 	     System.out.println("--> "+FuncID.toString() + ":" + FuncID.getVal());
 
 	     newTable.editTable(FuncID.getVal(), node.toString());
-	    
+	     
+	    String funcReturn = "void";
 
 	     // adiciona argumentos da funcao, se estes existirem
 	     if (node.jjtGetNumChildren()>2) {  
 		  
 		  int index=1;
 		  for (int i=1; i!=node.jjtGetNumChildren(); i++) {
-		      if (node.jjtGetChild(i).toString().equals("Args"))  {
+
+		      Node childNode = node.jjtGetChild(i);
+
+		      // verifica por retorno da funcao
+		      if (childNode.toString().equals("AssignID")) {
+			  funcReturn = childNode.getVal();
+		      }
+
+		      // procura argumentos
+		      else if (childNode.toString().equals("Args"))  {
 			  index = i;
 			  break;
 		      }
@@ -129,6 +143,7 @@ public class SymbolTable extends Object {
 
 		      // verifica se arg é do tipo array (MELHORAR METODO...)
 		      if (i<numArgs-1 && Args.jjtGetChild(i+1).toString().equals("IsArray")) {
+
 			newTable.addArg(newArg.getVal(), "int[]");
 			i++;
 		      }
@@ -139,6 +154,8 @@ public class SymbolTable extends Object {
 		  }
 	     }
 
+	      // adiciona returnType
+	     newTable.setReturn(funcReturn);
 
 	     // passa nó com resto da funcao (stmtLst)
 	    Node stmtLst = (node.jjtGetChild(node.jjtGetNumChildren()-1)).jjtGetChild(0);
@@ -157,13 +174,14 @@ public class SymbolTable extends Object {
 	     int numStmt = node.jjtGetNumChildren();
 	     for (int i=0; i!=numStmt; i++) {
 		  Node stmt = node.jjtGetChild(i);
-		 
+		  String stmtType = stmt.toString();
 		  
-		  if (stmt.toString().equals("Assign")) {
+
+		  if (stmtType.equals("Assign")) {
 		      mainTable.addAssign(stmt, mainTable);
 		  }
 
-		  else if (stmt.toString().equals("While")) { // adiciona novo 'nivel' da tabela de simbolos
+		  else if (stmtType.equals("While")) { // adiciona novo 'nivel' da tabela de simbolos
 		      SymbolTable newTable = new SymbolTable("While", mainTable);
 		      Node whileNode = stmt.jjtGetChild(1);
 		      addFuncBody(whileNode, newTable);
@@ -171,7 +189,7 @@ public class SymbolTable extends Object {
 		      mainTable.addTable(newTable);
 		  }
 
-		  else if (stmt.toString().equals("If")) {
+		  else if (stmtType.equals("If")) {
 		      
 		      int numStmtLst = stmt.jjtGetNumChildren();
 		      for (int j=0; j!=numStmtLst; j++) {
@@ -190,10 +208,16 @@ public class SymbolTable extends Object {
 
 			  mainTable.addTable(newTable);
 			}
-		      }
-		
-		      
+		      }		      
 		  }
+
+		// apenas para analise erros semanticos 
+		else if (stmtType.equals("CallID")) {
+		    
+		    // verifica se chamada à funcao é válida
+		    if (!functionExists(stmt.getVal(), "call")) 
+			return;
+		}
 	     }
 
 
@@ -207,6 +231,8 @@ public class SymbolTable extends Object {
 	    // System.out.println("==="+lhs.getVal());
 
 	     if (lhs.jjtGetNumChildren() !=0) {
+
+		//inserir tamanho array
 		table.addVar(lhs.getVal(), "int[]");
 
 		
@@ -229,6 +255,11 @@ public class SymbolTable extends Object {
 		isFunc = true;
 	    else
 		isFunc = false;
+	  }
+
+	  public void setReturn(String funcReturn) {
+	    returnType = funcReturn;
+
 	  }
 
 	  /*** Adiciona nova variavel a localVars ***/
@@ -270,9 +301,10 @@ public class SymbolTable extends Object {
 				+ "\n" + spacing + "-localVars: " + localVars.size()
 				+ ";\t childTables: " + childTables.size());
 	    
-	    // imprime argumentos funcao 
+	    // imprime retorno e argumentos funcao 
 	    
 	    if (isFunc && funcArgs.size()>0) {
+		System.out.println(spacing + "return: " + returnType);
 		System.out.println("__FuncArgs:__");
 		for (int i=0; i!=funcArgs.size(); i++) {
 		    funcArgs.get(i).printVar();
@@ -300,29 +332,89 @@ public class SymbolTable extends Object {
 	  
 	  }
 
+
+
+
+
+
+
+
+
+	   /*** funcoes de ANALISE SEMANTICA ***/
+	  public Integer variableExists(String varName) {
+		
+	     
+	     for (int i=0; i!=localVars.size(); i++) {
+
+		  Variable var = localVars.get(i);
+
+		  if (var.getAttribute("name").equalsIgnoreCase(varName)) {
+		      return 1;
+		  }
+
+
+	      }
+
+	      System.out.println("semantic error: line x, variable " + varName + " not declared");
+	      return -1;
+
+	  }
+
+
+	  /*** Verifica se existe uma funcao com nome, argumentos e retorno compativeis à chamada 
+	  ** funcName: nome da funcao
+	  ** callType: 'call' ou 'assign'
+	  ***/
+	  public Boolean functionExists(String funcName, String callType) {
+	      
+	      for (int i=0; i!=childTables.size(); i++) {
+
+		  SymbolTable func = childTables.get(i);
+
+		  if (func.isFunc && (func.name.equalsIgnoreCase(funcName) || func.returnType.equalsIgnoreCase(funcName))) {
+
+		      //checkReturnType
+		      if (callType.equalsIgnoreCase("call") && !func.returnType.equals("void")) {
+			  System.out.println("semantic error: line x, function " + funcName + " returns scalar");
+			  return false;
+		      }
+
+		      //checkArguments(func);
+		      
+
+		      return true;	
+		  }
+
+
+	      }
+
+	      System.out.println("semantic error: line x, function " + funcName + " is not included in this module");
+	      return false;
+	      
+	  }
+
+	  
+
+
 	}
 
 class Variable {
       
 	String type;
 	String name; 
-	String value; // valor atribuido à variavel
 
-	Integer arraySize; // caso seja um array, o tamanho deste
+	Integer arraySize; // tamanho da variavel tipo array; valor -1 para var. escalares
 
 	public Variable(String vName, String vType) {
 	    type = vType;
 	    name = vName;
+	    arraySize=-1;
 	}
 
 	public Variable(String vName, String vType, String vSize) {
 	    type = vType;
 	    name = vName;
 	    setArraySize(vSize);
-	}
-
-	public void setValue(String val) {
-	    value = val;
 	}
 
 	public void setArraySize(String size) {
@@ -332,14 +424,20 @@ class Variable {
 	public String getAttribute(String attribute) {
 	    if (attribute.equalsIgnoreCase("type"))
 		return type;
-	    else if (attribute.equalsIgnoreCase("value"))
-		return value;
+	    else if (attribute.equalsIgnoreCase("arraySize"))
+		return Integer.toString(arraySize);
 	    else
 		return name;
 	}
 
 	public void printVar() {
-	    System.out.println(name + ":" + type);
+
+	    if (arraySize == -1)
+	      System.out.println(name + ":" + type);
+	    else
+	      System.out.println(name + ":" + type + "(" + arraySize + ")");
+
 	}
 	
 }
+
