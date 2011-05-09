@@ -166,7 +166,6 @@ import java.util.*;
       }
     }
     jj_consume_token(RCHAVETA);
-
   }
 
 // A declaration can only be an INT or INT[]
@@ -238,7 +237,6 @@ import java.util.*;
                                   jjtree.closeNodeScope(jjtn003, true);
                                   jjtc003 = false;
                                  jjtn003.val = t1.image;
-                                /*HashMap temp = new HashMap(); temp.put(t1.image, new STC("AddSubOP", t1.image));*/
           } finally {
                                   if (jjtc003) {
                                     jjtree.closeNodeScope(jjtn003, true);
@@ -256,8 +254,7 @@ import java.util.*;
         try {
                                jjtree.closeNodeScope(jjtn004, true);
                                jjtc004 = false;
-                              jjtn004.val = t2.image; HashMap temp = new HashMap();
-                                /*temp.put(t2.image, new STC("INTEGER", t2.image));*/
+                              jjtn004.val = t2.image;
         } finally {
                                if (jjtc004) {
                                  jjtree.closeNodeScope(jjtn004, true);
@@ -1460,6 +1457,29 @@ import java.util.*;
     finally { jj_save(1, xla); }
   }
 
+  static private boolean jj_3R_18() {
+    if (jj_scan_token(33)) return true;
+    if (jj_scan_token(SIZE)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_22() {
+    if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_13() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_18()) jj_scanpos = xsp;
+    return false;
+  }
+
+  static private boolean jj_3R_20() {
+    if (jj_scan_token(ID)) return true;
+    return false;
+  }
+
   static private boolean jj_3R_15() {
     if (jj_scan_token(31)) return true;
     return false;
@@ -1598,29 +1618,6 @@ import java.util.*;
 
   static private boolean jj_3R_8() {
     if (jj_3R_11()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_18() {
-    if (jj_scan_token(33)) return true;
-    if (jj_scan_token(SIZE)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_22() {
-    if (jj_scan_token(INTEGER)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_13() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_18()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_20() {
-    if (jj_scan_token(ID)) return true;
     return false;
   }
 

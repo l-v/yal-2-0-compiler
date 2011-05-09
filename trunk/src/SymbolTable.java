@@ -12,7 +12,7 @@ public class SymbolTable extends Object {
 	  LinkedList<SymbolTable> childTables;
 	  SymbolTable parentTable;
 	  LinkedList<Variable> localVars;
-	  
+
 	  Boolean isFunc; //verdadeiro se esta tabela de simbolos esta associada a uma funcao
 	  LinkedList<Variable> funcArgs; //argumentos da funcao
 
@@ -208,6 +208,8 @@ public class SymbolTable extends Object {
 
 	     if (lhs.jjtGetNumChildren() !=0) {
 		table.addVar(lhs.getVal(), "int[]");
+
+		
 	     }
 
 	     else {
@@ -232,6 +234,11 @@ public class SymbolTable extends Object {
 	  /*** Adiciona nova variavel a localVars ***/
 	  public void addVar(String vName, String vType) {
 	    Variable newVar = new Variable(vName, vType);
+	    localVars.add(newVar);
+	  }
+
+	  public void addVar(String vName, String vType, String vSize) {
+	    Variable newVar = new Variable(vName, vType, vSize);
 	    localVars.add(newVar);
 	  }
 
@@ -298,16 +305,35 @@ public class SymbolTable extends Object {
 class Variable {
       
 	String type;
-	String name;
+	String name; 
+	String value; // valor atribuido à variavel
+
+	Integer arraySize; // caso seja um array, o tamanho deste
 
 	public Variable(String vName, String vType) {
 	    type = vType;
 	    name = vName;
 	}
 
+	public Variable(String vName, String vType, String vSize) {
+	    type = vType;
+	    name = vName;
+	    setArraySize(vSize);
+	}
+
+	public void setValue(String val) {
+	    value = val;
+	}
+
+	public void setArraySize(String size) {
+	    arraySize = Integer.parseInt(size);
+	}
+
 	public String getAttribute(String attribute) {
 	    if (attribute.equalsIgnoreCase("type"))
 		return type;
+	    else if (attribute.equalsIgnoreCase("value"))
+		return value;
 	    else
 		return name;
 	}
