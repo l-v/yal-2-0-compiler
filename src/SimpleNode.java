@@ -10,6 +10,7 @@ class SimpleNode implements Node {
   protected yal2jvm parser;
 
   public String val; // valor armazenado no nó
+  public int beginLine; // linha onde comeca o token do nó
 
   public SimpleNode(int i) {
     id = i;
@@ -51,6 +52,10 @@ class SimpleNode implements Node {
 
   public String getVal() {
      return val;
+  }
+
+  public int getLine() {
+    return beginLine;
   }
 
   public void jjtSetValue(Object value) { this.value = value; }

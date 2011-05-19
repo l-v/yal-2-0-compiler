@@ -38,7 +38,7 @@ public class SymbolTable extends Object {
 	
 	    isFunc = false;
 	    funcArgs = new LinkedList<Variable>();
-	    parentTable = null;
+	    parentTable = parent;
 	  }
 
 	  public SymbolTable(Node root) {
@@ -215,8 +215,10 @@ public class SymbolTable extends Object {
 		else if (stmtType.equals("CallID")) {
 		    
 		    // verifica se chamada à funcao é válida
-		    if (!functionExists(stmt.getVal(), "call")) 
-			return;
+		    if (!functionExists(stmt.getVal(), "call", stmt.getLine())) {
+			
+		    }
+		
 		}
 	     }
 
@@ -247,9 +249,13 @@ public class SymbolTable extends Object {
 	    for (int i=0; i!=numTerms; i++) {
 	  
 		Node term = rhs.jjtGetChild(i);
-		if (term.toString().equals("Term")) {
-		      // assign tem variaveis: ver possiveis erros
+		
 
+		if (term.toString().equals("Term") && term.jjtGetChild(0).toString().equals("ID")) {
+
+		      Node termChild = term.jjtGetChild(0);
+		      // assign tem variaveis: ver possiveis erros
+		      functionExists(termChild.getVal(), "assign", termChild.getLine());
 		}
 
 	    }
@@ -378,24 +384,27 @@ public class SymbolTable extends Object {
 	  ** funcName: nome da funcao
 	  ** callType: 'call' ou 'assign'
 	  ***/
-	  public Boolean functionExists(String funcName, String callType) {
+	  public Boolean functionExists(String funcName, String callType, int line) {
 	      
 	      
+	      SymbolTable table = this;
 
-	      for (int i=0; i!=childTables.size(); i++) {
+	      while (true) {
+	  
+	      for (int i=0; i!=table.childTables.size(); i++) {
 
-		  SymbolTable func = childTables.get(i);
-
+		  SymbolTable func = table.childTables.get(i);
+		  System.out.println("NAME: " + func.name);
 		  if (func.isFunc && (func.name.equalsIgnoreCase(funcName) || func.returnType.equalsIgnoreCase(funcName))) {
-
+		      
 		      //checkReturnType
 		      if (callType.equalsIgnoreCase("call") && !func.returnType.equals("void")) {
-			  System.out.println("semantic error: line x, function " + funcName + " returns scalar");
+			  System.out.println("semantic error: line " + line + ", function " + funcName + " returns scalar");
 			  return false;
 		      }
 
 		      else if (callType.equalsIgnoreCase("assign") && func.returnType.equals("void")) {
-			  System.out.println("semantic error: line 10, function " + funcName + " returns void");
+			  System.out.println("semantic error: line " + line + ", function " + funcName + " returns void");
 			  return false;
 		      }
 
@@ -408,12 +417,22 @@ public class SymbolTable extends Object {
 
 	      }
 
-	      System.out.println("semantic error: line x, function " + funcName + " is not included in this module");
-	      return false;
-	      
+	      // verifica se ja chegamos a tabela 'raiz'
+	      if (table.parentTable == null) {
+		  System.out.println("NULL");
+		  break;
+	      }
+
+	      table = table.parentTable;
+
 	  }
 
-	  
+	      System.out.println("semantic error: line " + line + ", function " + funcName + " is not included in this module");
+	      return false;
+	      
+
+
+	  }
 
 
 	}

@@ -32,5 +32,8 @@ public interface Node {
 
   /** Retorna o valor armazenado no nó */
   public String getVal();
+
+  /** Retorna a linha respectiva ao nó */
+  public int getLine();
 }
 /* JavaCC - OriginalChecksum=936c49130955fac4109eb7a19997ce98 (do not edit this line) */

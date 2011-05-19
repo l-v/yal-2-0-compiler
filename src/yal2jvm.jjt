@@ -123,7 +123,7 @@ void Module() #void : {Token t0;}
   arvore: 3: MID Decl Func;
   falta os valores*/
   
-  <MODULE> t0=<ID> {jjtThis.val = t0.image; 
+  <MODULE> t0=<ID> {jjtThis.val = t0.image;
 		   } #MID
   <LCHAVETA>
   (Declaration() #Decl)* 
@@ -168,7 +168,9 @@ void Function() #void : {Token t0; Token t1; Token t2;}
 // melhorar identificacao de array
 void Varlist() #void : {Token t0; Token t1;}
 {
-  ((t0=<ID> {jjtThis.val=t0.image;} #VarListID) ("[" "]" #IsArray)?) ( <VIRG> (t1=<ID> {jjtThis.val=t1.image;} #VarListID) ("[" "]" #IsArray)? )*
+  ((t0=<ID> {jjtThis.val=t0.image;} #VarListID) ("[" "]" #IsArray)?) 
+  ( <VIRG> (t1=<ID> {jjtThis.val=t1.image;} #VarListID) 
+  ("[" "]" #IsArray)? )*
 }
 
 
@@ -234,10 +236,15 @@ void ArraySize() #void : {Token tSize;}
 
 void Term() #void: {Token tInt; Token t0; Token t1; Token tSize; Token tOp;}
 {
- (tOp=<ADDSUB_OP> {jjtThis.val = tOp.image;} #AddSubOP)? (tInt=<INTEGER> {jjtThis.val=tInt.image;} #INTEGER | ( (t0=<ID> {jjtThis.val=t0.image;} #ID)
-		 ( LOOKAHEAD(2) (("." (t1=< ID > {jjtThis.val=t1.image;} #ID2))? < LPAR > (ArgumentList() #ArgList)? < RPAR >)
-		| ( ("[" Index() /*#Index*/ "]") | ("." tSize=<SIZE> {jjtThis.val=tSize.image;} #Size)? ))
-		))
+ (tOp=<ADDSUB_OP> {jjtThis.val = tOp.image;} #AddSubOP)? 
+ 
+ (tInt=<INTEGER> {jjtThis.val=tInt.image;} #INTEGER 
+ | ( (t0=<ID> {jjtThis.val=t0.image; jjtThis.beginLine = t0.beginLine;} #ID)
+      ( LOOKAHEAD(2) 
+      (("." (t1=< ID > {jjtThis.val=t1.image; jjtThis.beginLine = t1.beginLine;} #ID2))? 
+	 < LPAR > (ArgumentList() #ArgList)? < RPAR >)
+	| ( ("[" Index() /*#Index*/ "]") | ("." tSize=<SIZE> {jjtThis.val=tSize.image;} #Size)? ))
+	))
 }
 
 void Exprtest() : {Token tOp;}
@@ -259,7 +266,8 @@ void If() : {}
 
 void Call() #void : {Token t0; Token t1;}
 {
-   (t0=< ID > {jjtThis.val = t0.image;} #CallID) ("." (t1=< ID > {jjtThis.val = t1.image;} #CallID2))? < LPAR > (ArgumentList() #ArgList)? < RPAR >
+   (t0=< ID > {jjtThis.val = t0.image; jjtThis.beginLine = t0.beginLine;} #CallID) 
+   ("." (t1=< ID > {jjtThis.val = t1.image;} #CallID2))? < LPAR > (ArgumentList() #ArgList)? < RPAR >
 }
 
 void ArgumentList() #void : {}
