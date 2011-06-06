@@ -26,26 +26,25 @@ public interface yal2jvmTreeConstants
   public int JJTTERM = 22;
   public int JJTARITMOP = 23;
   public int JJTBITOP = 24;
-  public int JJTTERM2 = 25;
-  public int JJTARRSIZE = 26;
-  public int JJTSCALAR = 27;
-  public int JJTINTEGER = 28;
-  public int JJTID = 29;
-  public int JJTID2 = 30;
-  public int JJTARGLIST = 31;
-  public int JJTSIZE = 32;
-  public int JJTEXPRTEST = 33;
-  public int JJTWHILE = 34;
-  public int JJTIF = 35;
-  public int JJTCALLID = 36;
-  public int JJTCALLID2 = 37;
-  public int JJTARGUMENT = 38;
-  public int JJTARGID = 39;
-  public int JJTSTRING = 40;
-  public int JJTARRAYINDEX = 41;
-  public int JJTSCALARSIZE = 42;
-  public int JJTINDEX = 43;
-  public int JJTINDEXID = 44;
+  public int JJTARRSIZE = 25;
+  public int JJTSCALAR = 26;
+  public int JJTINTEGER = 27;
+  public int JJTID = 28;
+  public int JJTID2 = 29;
+  public int JJTARGLIST = 30;
+  public int JJTSIZE = 31;
+  public int JJTEXPRTEST = 32;
+  public int JJTWHILE = 33;
+  public int JJTIF = 34;
+  public int JJTCALLID = 35;
+  public int JJTCALLID2 = 36;
+  public int JJTARGUMENT = 37;
+  public int JJTARGID = 38;
+  public int JJTSTRING = 39;
+  public int JJTARRAYINDEX = 40;
+  public int JJTSCALARSIZE = 41;
+  public int JJTINDEX = 42;
+  public int JJTINDEXID = 43;
 
 
   public String[] jjtNodeName = {
@@ -74,7 +73,6 @@ public interface yal2jvmTreeConstants
     "Term",
     "AritmOP",
     "BitOP",
-    "Term2",
     "ArrSize",
     "Scalar",
     "INTEGER",
@@ -96,4 +94,4 @@ public interface yal2jvmTreeConstants
     "IndexID",
   };
 }
-/* JavaCC - OriginalChecksum=bf23216079c84546f6449524d9dccaa0 (do not edit this line) */
+/* JavaCC - OriginalChecksum=b73fdb4d727f76abd0e9421880911a8c (do not edit this line) */
