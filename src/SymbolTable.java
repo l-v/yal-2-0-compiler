@@ -223,17 +223,27 @@ public class SymbolTable extends Object {
 
 		// apenas para analise erros semanticos 
 		else if (stmtType.equals("CallID")) {
-		    
-		    // verifica se chamada à funcao é válida
-		    Node argsNode;
-		   if (i+1 < numStmt && node.jjtGetChild(i+1).toString().equals("ArgList"))
-			argsNode = node.jjtGetChild(i+1);
-	    
-		    else
-			argsNode = null;
+		   
+		    // verifica se funcao pertence a este modulo
+		    Boolean checkFunc = true;
+		    if (i+1 != numStmt) { 
+			if (node.jjtGetChild(i+1).toString().equals("CallID2")) 
+			      checkFunc = false;
+		    }
 
-		    OnHoldError newError = new OnHoldError(stmt.getVal(), "call", stmt.getLine(), argsNode, null);
-		    SAnalysis.errors.add(newError); 	    
+
+		    // verifica se chamada à funcao é válida
+		    if (checkFunc) {
+			Node argsNode;
+			if (i+1 < numStmt && node.jjtGetChild(i+1).toString().equals("ArgList"))
+			      argsNode = node.jjtGetChild(i+1);
+	    
+			else
+			      argsNode = null;
+
+			  OnHoldError newError = new OnHoldError(stmt.getVal(), "call", stmt.getLine(), argsNode, null);
+			  SAnalysis.errors.add(newError); 	    
+		    }
 		
 		}
 	     }
@@ -269,17 +279,24 @@ public class SymbolTable extends Object {
 
 		if (term.toString().equals("Term") && term.jjtGetChild(0).toString().equals("ID")) {
 
-		      //check if it is a function and not a variable
+		      //check if it is a function and not a variable, and if function belongs to this module
 		      Boolean isFunction = false;
+		      Boolean inModule = true;
 
-		      for (int j=i; j!=numTerms; j++) {
-			  if (rhs.jjtGetChild(j).toString().equals("IsFunc"))
+		      int termChildren = term.jjtGetNumChildren();
+		      for (int j=0; j!=termChildren; j++) { 
+			  String termName = term.jjtGetChild(j).toString();
+
+			  if (termName.equals("IsFunc"))
 			      isFunction = true;
+
+			  if (termName.equals("ID2"))
+			      inModule = false;
 
 		      }
 		    
 		  
-		      if (isFunction) {
+		      if (isFunction && inModule) {
 
 			  Node termChild = term.jjtGetChild(0);
 			  Node argsNode = null;
