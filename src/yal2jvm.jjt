@@ -35,9 +35,9 @@ import java.util.*;
         
 	SimpleNode root = newParser.parserBegin(); //devolve referência para o nó raiz da árvore
 	SymbolTable ST = new SymbolTable(root);
-	//root.dump("");
+	root.dump("");
      
-	//ST.printTable();
+	ST.printTable();
 	SAnalysisFunctions semantic = new SAnalysisFunctions(ST);
 	semantic.doAnalysis();
      
