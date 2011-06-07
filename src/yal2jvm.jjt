@@ -35,9 +35,11 @@ import java.util.*;
         
 	SimpleNode root = newParser.parserBegin(); //devolve referência para o nó raiz da árvore
 	SymbolTable ST = new SymbolTable(root);
-	root.dump("");
+	//root.dump("");
      
-	ST.printTable();
+	//ST.printTable();
+	SAnalysisFunctions semantic = new SAnalysisFunctions(ST);
+	semantic.doAnalysis();
      
 
 	// print symbol table
@@ -153,7 +155,7 @@ void Function() #void : {Token t0; Token t1; Token t2;}
 {
   (<FUNCTION> (t0=<ID> {jjtThis.val = t0.image;} #FuncID)
     (
-    (( "[" "]")?
+    (( "[" "]" {jjtThis.val = "[]";} #IsArray)?
     <ASSIGN> (t2=<ID> {jjtThis.val = t2.image;} #AssignID)
     <LPAR> (Varlist() #Args)? <RPAR>)
     |
