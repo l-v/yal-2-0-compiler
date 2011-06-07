@@ -41,6 +41,7 @@ import java.util.*;
 	SAnalysisFunctions semantic = new SAnalysisFunctions(ST);
 	semantic.doAnalysis();
      
+	CodeGenerator generateCode = new CodeGenerator("output.j", ST);
 
 	// print symbol table
 	/*
@@ -244,7 +245,7 @@ void Term() #void: {Token tInt; Token t0; Token t1; Token tSize; Token tOp;}
  | ( (t0=<ID> {jjtThis.val=t0.image; jjtThis.beginLine = t0.beginLine;} #ID)
       ( LOOKAHEAD(2) 
       (("." (t1=< ID > {jjtThis.val=t1.image; jjtThis.beginLine = t1.beginLine;} #ID2))? 
-	 < LPAR > (ArgumentList() #ArgList)? < RPAR >)
+	 < LPAR > (ArgumentList() #ArgList)? < RPAR > {jjtThis.val = "IsFunc"; System.out.println("somethign");} #IsFunc)
 	| ( ("[" Index() /*#Index*/ "]") | ("." tSize=<SIZE> {jjtThis.val=tSize.image;} #Size)? ))
 	))
 }
