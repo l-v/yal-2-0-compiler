@@ -2,6 +2,11 @@
 import java.util.*;
 
 
+
+/***
+** Class that builds the Symbol Table 
+** possible errors placed in SAnalysis.errors to be checked later 
+***/
 public class SymbolTable extends Object {
 
 
@@ -52,13 +57,6 @@ public class SymbolTable extends Object {
 	    
 
 	    addTree(root);
-
-	    // analise semantica
-	    for (int i=0; i!=SAnalysis.errors.size(); i++) {
-		OnHoldError error = SAnalysis.errors.get(i);
-		
-		functionExists(error.funcName, error.callType, error.line, error.calledArgs);
-	    }
 	  }
 
 	  public void addTree(Node root) {
@@ -67,7 +65,7 @@ public class SymbolTable extends Object {
 	    for (int i=0; i!=childNum; i++) {
 		
 		Node newNode = root.jjtGetChild(i);
-		System.out.println("--> "+newNode.toString() + ":" + newNode.getVal());
+		//System.out.println("--> "+newNode.toString() + ":" + newNode.getVal());
 
 		String varName = newNode.getVal();
 		String varType = newNode.toString();
@@ -89,7 +87,7 @@ public class SymbolTable extends Object {
 	  public void addDeclNode(Node node) {
 		
 		Node DeclID = node.jjtGetChild(0);
-		System.out.println("--> "+DeclID.toString() + ":" + DeclID.getVal());
+		//System.out.println("--> "+DeclID.toString() + ":" + DeclID.getVal());
 		
 
 		for (int i=1; i!=node.jjtGetNumChildren(); i++) {
@@ -115,7 +113,7 @@ public class SymbolTable extends Object {
 
 		
 	     Node FuncID = node.jjtGetChild(0);
-	     System.out.println("--> "+FuncID.toString() + ":" + FuncID.getVal());
+	     //System.out.println("--> "+FuncID.toString() + ":" + FuncID.getVal());
 
 	     newTable.editTable(FuncID.getVal(), node.toString());
 	     
@@ -133,6 +131,10 @@ public class SymbolTable extends Object {
 		      if (childNode.toString().equals("AssignID")) {
 			  funcReturn = newTable.name;
 			  newTable.name = childNode.getVal();
+
+			  // verifica se retorno é array
+			  if (node.jjtGetChild(i-1).toString().equals("IsArray"))
+			      funcReturn += "[]";
 		      }
 
 		      // procura argumentos
@@ -230,7 +232,7 @@ public class SymbolTable extends Object {
 		    else
 			argsNode = null;
 
-		    OnHoldError newError = new OnHoldError(stmt.getVal(), "call", stmt.getLine(), argsNode);
+		    OnHoldError newError = new OnHoldError(stmt.getVal(), "call", stmt.getLine(), argsNode, null);
 		    SAnalysis.errors.add(newError); 	    
 		
 		}
@@ -245,7 +247,7 @@ public class SymbolTable extends Object {
 
 	     Node lhs = node.jjtGetChild(0);
 	     Node rhs = node.jjtGetChild(1);
-	    // System.out.println("==="+lhs.getVal());
+	     //System.out.println("==="+lhs.getVal());
 
 	     if (lhs.jjtGetNumChildren() !=0) {
 
@@ -275,7 +277,7 @@ public class SymbolTable extends Object {
 		    
 
 		      // assign tem variaveis: ver possiveis erros
-		      OnHoldError newError = new OnHoldError(termChild.getVal(), "assign", termChild.getLine(), argsNode);
+		      OnHoldError newError = new OnHoldError(termChild.getVal(), "assign", termChild.getLine(), argsNode, lhs.getVal());
 		      SAnalysis.errors.add(newError);
 		}
 
@@ -372,201 +374,6 @@ public class SymbolTable extends Object {
 	    }
 	  
 	  }
-
-
-
-
-
-	/*** ================================================== ***/
-
-
-
-	   /*** funcoes de ANALISE SEMANTICA ***/
-	  public Integer variableExists(String varName) {
-		
-	     /*
-	     for (int i=0; i!=localVars.size(); i++) {
-
-		  Variable var = localVars.get(i);
-
-		  if (var.getAttribute("name").equalsIgnoreCase(varName)) {
-		      return 1;
-		  }
-
-
-	      }
-
-	      System.out.println("semantic error: line x, variable " + varName + " not declared");
-	      */return -1;
-
-	  }
-
-
-	  /*** Verifica se existe uma funcao com nome, argumentos e retorno compativeis à chamada 
-	  ** funcName: nome da funcao
-	  ** callType: 'call' ou 'assign'
-	  ***/
-	  public Boolean functionExists(String funcName, String callType, int line, Node calledArgs) {
-	      
-	      
-	      SymbolTable table = this;
-
-	      while (true) {
-
-
-	      	   // see if variable called is not a function, but an argument of a function
-		  int numArgs = table.funcArgs.size();  
-		  for (int j=0; j!=numArgs; j++) {
-		      if (table.funcArgs.get(j).name.equalsIgnoreCase(funcName))
-			  return true;
-		  }
-
-
-	      for (int i=0; i!=table.childTables.size(); i++) {
-
-		  SymbolTable func = table.childTables.get(i);
-
-		  if (func.isFunc && (func.name.equalsIgnoreCase(funcName) /*|| func.returnType.equalsIgnoreCase(funcName)*/)) {
-		
-		      //checkReturnType
-		      if (callType.equalsIgnoreCase("call") && !func.returnType.equals("void")) {
-			  System.out.println("semantic error: line " + line + ", function " + funcName + " returns scalar");
-			  return false;
-		      }
-
-		      else if (callType.equalsIgnoreCase("assign") && func.returnType.equals("void")) {
-			  System.out.println("semantic error: line " + line + ", function " + funcName + " returns void");
-			  return false;
-		      }
-
-		      //checkArguments(func);
-		      if (calledArgs != null)
-			  return checkArguments(func.funcArgs, calledArgs, line, funcName);
-		      
-
-		      return true;	
-		  }
-
-		  // see if variable called is not a function, but an argument of a function
-		  numArgs = func.funcArgs.size();  
-		  for (int j=0; j!=numArgs; j++) {
-		      if (func.funcArgs.get(j).name.equalsIgnoreCase(funcName))
-			  return true;
-		  }
-
-
-	      }
-
-	      // verifica se ja chegamos a tabela 'raiz'
-	      if (table.parentTable == null) {
-		  System.out.println("NULL");
-		  break;
-	      }
-
-	      table = table.parentTable;
-
-	  }
-
-	      System.out.println("semantic error: line " + line + ", function " + funcName + " is not included in this module");
-	      return false;
-	      
-
-
-	  }
-
-
-	  public boolean checkArguments(LinkedList funcArgs, Node calledArgs, int line, String funcName) {
-
-	      System.out.println("\nGOT HERE! :D\n\n");
-
-	      int numFuncArgs = funcArgs.size();
-	      
-
-	      if (calledArgs == null && numFuncArgs == 0)
-		    return true;
-
-	      else if (calledArgs == null && numFuncArgs != 0) {
-		    System.out.println("semantic error: line " + line + ", function " + funcName + " has arguments");
-		    return false;
-	      }
-
-
-	      int numCalledArgs = calledArgs.jjtGetNumChildren();
-
-	      if (numFuncArgs ==0) {
-		    System.out.println("semantic error: line " + line + ", function " + funcName + " does not have arguments");
-		    return false;
-	      }
-
-	      else if (numCalledArgs > 1 && numFuncArgs == 1) {
-		    System.out.println("semantic error: line " + line + ", function " + funcName + " has only one argument");
-		    return false;
-	      }
-
-	      //second argument of function "f1" must be an array
-	      else if (numCalledArgs != numFuncArgs) {
-		    System.out.println("semantic error: line " + line + ", function " + funcName + " has only different number of arguments");
-		    return false;
-	      }
-
-	      // check if argument type matches
-	   /*   for (int i=0; i!=numFuncArgs; i++) {
-
-		  
-
-		  if (funcArgs.get(i).arraySize == -1 && 
-
-	      }
-*/
-
-
-	      return true;
-	  }
-
-
 	}
 
-class Variable {
-      
-	String type;
-	String name; 
 
-	Integer arraySize; // tamanho da variavel tipo array; valor -1 para var. escalares
-	//LinkedList<String> funcID; // id das funcoes necessarios para obter o valor da variavel
-	
-
-	public Variable(String vName, String vType) {
-	    type = vType;
-	    name = vName;
-	    arraySize=-1;
-	}
-
-	public Variable(String vName, String vType, String vSize) {
-	    type = vType;
-	    name = vName;
-	    setArraySize(vSize);
-	}
-
-	public void setArraySize(String size) {
-	    arraySize = Integer.parseInt(size);
-	}
-
-	public String getAttribute(String attribute) {
-	    if (attribute.equalsIgnoreCase("type"))
-		return type;
-	    else if (attribute.equalsIgnoreCase("arraySize"))
-		return Integer.toString(arraySize);
-	    else
-		return name;
-	}
-
-	public void printVar() {
-
-	    if (arraySize == -1)
-	      System.out.println(name + ":" + type);
-	    else
-	      System.out.println(name + ":" + type + "(" + arraySize + ")");
-
-	}
-	
-}

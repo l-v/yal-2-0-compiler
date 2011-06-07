@@ -11,11 +11,11 @@ public interface yal2jvmTreeConstants
   public int JJTADDSUBOP = 7;
   public int JJTINICVAR = 8;
   public int JJTFUNCID = 9;
-  public int JJTASSIGNID = 10;
-  public int JJTARGS = 11;
-  public int JJTFUNCBODY = 12;
-  public int JJTVARLISTID = 13;
-  public int JJTISARRAY = 14;
+  public int JJTISARRAY = 10;
+  public int JJTASSIGNID = 11;
+  public int JJTARGS = 12;
+  public int JJTFUNCBODY = 13;
+  public int JJTVARLISTID = 14;
   public int JJTARRAYID = 15;
   public int JJTSCALARELEMENT = 16;
   public int JJTSCALARID = 17;
@@ -58,11 +58,11 @@ public interface yal2jvmTreeConstants
     "AddSubOP",
     "InicVar",
     "FuncID",
+    "IsArray",
     "AssignID",
     "Args",
     "FuncBody",
     "VarListID",
-    "IsArray",
     "ArrayID",
     "ScalarElement",
     "ScalarID",
@@ -94,4 +94,4 @@ public interface yal2jvmTreeConstants
     "IndexID",
   };
 }
-/* JavaCC - OriginalChecksum=b73fdb4d727f76abd0e9421880911a8c (do not edit this line) */
+/* JavaCC - OriginalChecksum=52ac91322d62dd752cc3f77511df956c (do not edit this line) */
