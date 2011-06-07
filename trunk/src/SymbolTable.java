@@ -269,16 +269,30 @@ public class SymbolTable extends Object {
 
 		if (term.toString().equals("Term") && term.jjtGetChild(0).toString().equals("ID")) {
 
-		      Node termChild = term.jjtGetChild(0);
-		      Node argsNode = null;
+		      //check if it is a function and not a variable
+		      Boolean isFunction = false;
 
-		      if (term.jjtGetNumChildren() !=1 && term.jjtGetChild(1).toString().equals("ArgList"))
-			  argsNode = term.jjtGetChild(1);
+		      for (int j=i; j!=numTerms; j++) {
+			  if (rhs.jjtGetChild(j).toString().equals("IsFunc"))
+			      isFunction = true;
+
+		      }
+		    
+		  
+		      if (isFunction) {
+
+			  Node termChild = term.jjtGetChild(0);
+			  Node argsNode = null;
+
+			  if (term.jjtGetNumChildren() !=1 && term.jjtGetChild(1).toString().equals("ArgList"))
+			      argsNode = term.jjtGetChild(1);
 		    
 
-		      // assign tem variaveis: ver possiveis erros
-		      OnHoldError newError = new OnHoldError(termChild.getVal(), "assign", termChild.getLine(), argsNode, lhs.getVal());
-		      SAnalysis.errors.add(newError);
+			  // assign tem variaveis: ver possiveis erros
+			  OnHoldError newError = new OnHoldError(termChild.getVal(), "assign", termChild.getLine(), argsNode, lhs.getVal());
+			  SAnalysis.errors.add(newError);
+
+		      }
 		}
 
 	    }
