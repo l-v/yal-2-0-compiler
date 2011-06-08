@@ -258,7 +258,7 @@ public class SymbolTable extends Object {
 
 	      // verificar se variavel nao foi já declarada em niveis acima 
 	     Boolean alreadyDeclared = false;
-	     SymbolTable parent = parentTable;
+	     SymbolTable parent = this;
 
 	     while (parent != null) {
 		  
