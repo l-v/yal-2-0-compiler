@@ -245,8 +245,8 @@ public class CodeGenerator extends Object {
 			Node call2 = null;
 			Node args = null;
 
-			if (i+1 != numOfStmtLst) {
-			      Node temp = newNode.jjtGetChild(i+1);
+			if (i+1 < numOfStmtLst) {
+			      Node temp = stmtNode.jjtGetChild(i+1);
 
 			      if (temp.toString().equals("CallID2")) {
 				  call2 = temp;
@@ -258,7 +258,7 @@ public class CodeGenerator extends Object {
 			}
 
 			else if (i+2 != numOfStmtLst) {
-			      Node temp = newNode.jjtGetChild(i+2);
+			     Node temp = stmtNode.jjtGetChild(i+2);
 				
 			      if (temp.toString().equals("ArgList")) {
 				  args = temp;
@@ -340,7 +340,7 @@ public class CodeGenerator extends Object {
 	    Node child = testNode.jjtGetChild(i);
 
 	    if (child.toString().equals("Lhs")) {
-		   result += translateLeftElement(left, localVariables) + "\n";
+		 //  result += translateLeftElement(left, localVariables) + "\n";
 	    }
 	    else if (child.toString().equals("Rhs")) {
 		  // rhs method
