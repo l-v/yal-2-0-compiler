@@ -76,7 +76,7 @@ class SimpleNode implements Node {
   public void dump(String prefix) {
     System.out.println(toString(prefix));
     
-    if(children == null)
+    if(this.val != null)
     	System.out.println("\t[ "+this.val+" ]");
     
     if (children != null) {
