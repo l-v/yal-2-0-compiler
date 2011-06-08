@@ -3,7 +3,6 @@
  */
 
 
-
 options
 {
   JDK_VERSION = "1.5";
@@ -11,61 +10,38 @@ options
   LOOKAHEAD = 1;
 }
 
+
 PARSER_BEGIN(yal2jvm)
+
 import java.util.*;
 
-// código Java que invoca o parser
-  public class yal2jvm{
-
-	//public static SymbolTable ST = new SymbolTable();
+public class yal2jvm{
 
 	public static void main(String args[]) throws ParseException {
 
-	
+	  	// criacao do objecto para ler do standard input (teclado)
+		yal2jvm newParser = new yal2jvm(System.in);
 
+		SimpleNode root = newParser.parserBegin(); //devolve referencia para o no raiz da arvore
+		SymbolTable ST = new SymbolTable(root);
+		root.dump("");
+	     
+		ST.printTable();
 
-	  // criação do objecto utilizando o constructor com argumento para
-	  // ler do standard input (teclado)
-	  yal2jvm newParser = new yal2jvm(System.in);
-	  // newParser.Module();
+		SAnalysisFunctions semantic = new SAnalysisFunctions(ST);
+		semantic.doAnalysis();
 
-	// symbol table
-	//ST = new SymbolTable();
-
-        
-	SimpleNode root = newParser.parserBegin(); //devolve referência para o nó raiz da árvore
-	SymbolTable ST = new SymbolTable(root);
-	root.dump("");
-     
-	ST.printTable();
-	SAnalysisFunctions semantic = new SAnalysisFunctions(ST);
-	semantic.doAnalysis();
-     
-	CodeGenerator generateCode = new CodeGenerator("output.j", ST);
-
-	// print symbol table
-	/*
-    Iterator t = ST.keySet().iterator();
-
-
-     while ( t.hasNext() == true ) {
-
-          temp = (String)t.next();
-          temp2 = (STC)ST.get(temp);
-          System.out.println(temp);
-          if ( temp2.type != null )
-            System.out.println(" type = " + temp2.type);
-          if ( temp2.value != null )
-            System.out.println(" value = " + temp2.value);
-
-    }*/
-
+		CodeGenerator cg = new CodeGenerator("file.txt",ST,root);
 	}
   }
 
 PARSER_END(yal2jvm)
 
-// símbolos que não devem ser considerados na análise
+
+
+//GRAMATICA
+
+//simbolos nao considerados na analise
 <DEFAULT> SKIP : { 
   	 " "  
 	| "\t"
@@ -75,7 +51,7 @@ PARSER_END(yal2jvm)
 	| < "*/" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/" >
 }
 
-// definição dos tokens (símbolos terminais)
+// definicao dos tokens (simbolos terminais)
 <DEFAULT> TOKEN : {
 	<RELA_OP: ">" | "<" | "<=" | ">=" | "==" | "!=">
 	| <ADDSUB_OP: "+" | "-">
@@ -99,7 +75,7 @@ PARSER_END(yal2jvm)
 	
 }
 
-// definição da produção
+// definicao da producao
 <DEFAULT> TOKEN : {
 <INTEGER: (<DIGIT>)+>
 	| <ID: <LETTER> (<LETTER> | <DIGIT>)*>
@@ -109,14 +85,10 @@ PARSER_END(yal2jvm)
 }
 
 
-
-
-
 SimpleNode parserBegin() : {}
 {
     Module() {return jjtThis;}
 }
-
 
 
 void Module() #void : {Token t0;}
@@ -126,14 +98,11 @@ void Module() #void : {Token t0;}
   arvore: 3: MID Decl Func;
   falta os valores*/
   
-  <MODULE> t0=<ID> {jjtThis.val = t0.image;
-		   } #MID
+  <MODULE> t0=<ID> {jjtThis.val = t0.image;} #MID
   <LCHAVETA>
   (Declaration() #Decl)* 
   (Function() #Func)*
   <RCHAVETA>
-
-
 
 }
 
@@ -141,8 +110,8 @@ void Module() #void : {Token t0;}
 // A declaration can only be an INT or INT[]
 void Declaration() #void : {Token t0; Token t1; Token t2;}
 {
-  t0=<ID> {jjtThis.val = t0.image;} 
-	  #DeclID ["[" "]"] 
+  t0=<ID> {jjtThis.val = t0.image;} #DeclID ["[" "]" #IsArray]
+  
   (<ASSIGN> (("[" ArraySize() #ArraySize "]")
 	      | (t1=<ADDSUB_OP> {jjtThis.val = t1.image;} 
 				#AddSubOP)? 
@@ -177,10 +146,6 @@ void Varlist() #void : {Token t0; Token t1;}
 }
 
 
-
-
-
-
 void ArrayElement() #void : {Token t0;}
 {
   (t0=<ID> {jjtThis.val = t0.image;} #ArrayID) "[" "]"
@@ -191,7 +156,7 @@ void ScalarElement() : {Token t0;}
   t0=<ID> {jjtThis.val=t0.image;} #ScalarID
 }
 
-void Stmtlst() : {}
+void Stmtlst() #void : {}
 {
   ( Stmt() )*
 }
