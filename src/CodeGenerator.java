@@ -8,7 +8,6 @@ public class CodeGenerator extends Object {
   LinkedList<Variable> globalVars;
   int numStack;
 
-  
   CodeGenerator(String file, SymbolTable codeSt, Node rootNode) {
 
       st = codeSt;
@@ -276,15 +275,7 @@ public class CodeGenerator extends Object {
           
           if(leftnode.jjtGetNumChildren() != 0) //index
           {      	  
-              if(listContainsVar(var, globalVars) != -1) //array global
-            	  result += "getstatic fields/" + var + "[I\n";
-              else //array local
-              {
-            	  int indice = listContainsVar(var,localVariables);
-            	  
-            	  if(indice != -1)
-            		  result += "aload_" + indice + "\n";
-              }
+        	  result += loadVars(var, true, localVariables);
         	  
               Node index = leftnode.jjtGetChild(0).jjtGetChild(0);
                   
@@ -293,26 +284,20 @@ public class CodeGenerator extends Object {
               else if(index.toString().equals("IndexID"))
               {
             	  String indexid = index.getVal();
-            	  
-            	  if(listContainsVar(indexid, globalVars) != -1)
-                	  result += "getstatic fields/" + indexid + "I\n";
-                  else
-                  {
-                	  int indice = listContainsVar(indexid,localVariables);
-                	  
-                	  if(indice != -1)
-                		  result += "iload_" + indice + "\n";
-                  }
+            	  result += loadVars(indexid, false, localVariables);
               }
           }
-          else //var integer ou size
-          {
-        	  
-          }
-          
-          System.out.println(result);
+          else //var integer
+        	  result += loadVars(var, false, localVariables);
           
           return result;
+  }
+
+  public String translateRightElement(Node rightnode, LinkedList<Variable> localVariables)
+  {
+	  String result = "";
+	  
+	  return result;
   }
   
   public LinkedList<Variable> getLocalVariables(String type, String name)
@@ -461,6 +446,38 @@ public class CodeGenerator extends Object {
 	return result;
   }
 
+  public String loadVars(String var, boolean isArray, LinkedList<Variable> localVariables)
+  {
+	  String result = "";
+	  
+      if(listContainsVar(var, globalVars) != -1) //array global
+      {
+    	  result += "getstatic fields/" + var;
+    	  
+    	  if(isArray)
+    		  result += " [I\n";
+    	  else
+    		  result += " I\n";
+      }
+      else //array local
+      {
+    	  int indice = listContainsVar(var,localVariables);
+    	  
+    	  if(indice != -1)
+    	  {
+    		  if(isArray)
+    			  result += "aload_";
+    		  else
+    			  result+= "iload_";
+    		  
+    		  result += indice + "\n";
+    	  }
+    		  
+      }
+      
+      return result;
+  }
+  
   public void createFile(String fileName, String contents) {
       try{
         // Create file 
