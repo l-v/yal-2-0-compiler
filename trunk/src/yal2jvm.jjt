@@ -37,8 +37,8 @@ public class yal2jvm{
 			System.out.println(semantic.errorsFound.get(i));
 		    }
 		} else {
-		  CodeGenerator cg = new CodeGenerator("file.txt",ST,root); 
-		}
+		  CodeGenerator cg = new CodeGenerator("file.j",ST,root); 
+		} 
 	}
   }
 
@@ -217,7 +217,7 @@ void Term() #void: {Token tInt; Token t0; Token t1; Token tSize; Token tOp;}
  | ( (t0=<ID> {jjtThis.val=t0.image; jjtThis.beginLine = t0.beginLine;} #ID)
       ( LOOKAHEAD(2) 
       (("." (t1=< ID > {jjtThis.val=t1.image; jjtThis.beginLine = t1.beginLine;} #ID2))? 
-	 < LPAR > (ArgumentList() #ArgList)? < RPAR > {jjtThis.val = "IsFunc"; System.out.println("somethign");} #IsFunc)
+	 < LPAR > (ArgumentList() #ArgList)? < RPAR > {jjtThis.val = "IsFunc"; } #IsFunc)
 	| ( ("[" Index() /*#Index*/ "]") | ("." tSize=<SIZE> {jjtThis.val=tSize.image;} #Size)? ))
 	))
 }

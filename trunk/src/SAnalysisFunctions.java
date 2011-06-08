@@ -19,7 +19,7 @@ public class SAnalysisFunctions {
 	    }
 
 	    public void doAnalysis() {
-	      System.out.println("Found: " + SAnalysis.errors.size() + " errors");
+;
 	      LinkedList<OnHoldError> possibleErrors = SAnalysis.errors;
 
 	      for (int i=0; i!=possibleErrors.size(); i++) {
