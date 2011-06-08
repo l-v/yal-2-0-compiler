@@ -9,15 +9,17 @@ public class SAnalysisFunctions {
 
 
 	    SymbolTable st;
+	    LinkedList<String> errorsFound;
 
 
 	    public SAnalysisFunctions(SymbolTable symbolTab) {
 		  st = symbolTab;
-  
+		  errorsFound = new LinkedList<String>();
+
 	    }
 
 	    public void doAnalysis() {
-
+	      System.out.println("Found: " + SAnalysis.errors.size() + " errors");
 	      LinkedList<OnHoldError> possibleErrors = SAnalysis.errors;
 
 	      for (int i=0; i!=possibleErrors.size(); i++) {
@@ -120,12 +122,12 @@ public class SAnalysisFunctions {
 		
 		      //checkReturnType
 		      if (callType.equalsIgnoreCase("call") && !func.returnType.equals("void")) {
-			  System.out.println("semantic error: line " + line + ", function " + funcName + " returns scalar");
+			  errorsFound.add("semantic error: line " + line + ", function " + funcName + " returns scalar");
 			  return false;
 		      }
 
 		      else if (callType.equalsIgnoreCase("assign") && func.returnType.equals("void")) {
-			  System.out.println("semantic error: line " + line + ", function " + funcName + " returns void");
+			  errorsFound.add("semantic error: line " + line + ", function " + funcName + " returns void");
 			  return false;
 		      }
 
@@ -139,11 +141,11 @@ public class SAnalysisFunctions {
 
 			  // ver se returnTypes com array  coincidem
 			  if (!leftSide.type.contains("[]") && func.returnType.contains("[]")) {
-			      System.out.println("semantic error: line " + line + ", return of function " + funcName + " is an array ");
+			      errorsFound.add("semantic error: line " + line + ", return of function " + funcName + " is an array ");
 			      return false;
 			  }  
 			  else if (leftSide.type.contains("[]") && !func.returnType.contains("[]")) {
-			      System.out.println("semantic error: line " + line + ", return of function " + funcName + " is scalar ");
+			      errorsFound.add("semantic error: line " + line + ", return of function " + funcName + " is scalar ");
 			      return false;
 
 			  }
@@ -177,7 +179,7 @@ public class SAnalysisFunctions {
 
 	  }
 
-	      System.out.println("semantic error: line " + line + ", function " + funcName + " is not included in this module");
+	      errorsFound.add("semantic error: line " + line + ", function " + funcName + " is not included in this module");
 	      return false;
 	      
 
@@ -200,7 +202,7 @@ public class SAnalysisFunctions {
 		    return true;
 
 	      else if (calledArgs == null && numFuncArgs != 0) {
-		    System.out.println("semantic error: line " + line + ", function " + funcName + " has arguments");
+		    errorsFound.add("semantic error: line " + line + ", function " + funcName + " has arguments");
 		    return false;
 	      }
 
@@ -208,18 +210,18 @@ public class SAnalysisFunctions {
 	      int numCalledArgs = calledArgs.jjtGetNumChildren();
 
 	      if (numFuncArgs ==0) {
-		    System.out.println("semantic error: line " + line + ", function " + funcName + " does not have arguments");
+		    errorsFound.add("semantic error: line " + line + ", function " + funcName + " does not have arguments");
 		    return false;
 	      }
 
 	      else if (numCalledArgs > 1 && numFuncArgs == 1) {
-		    System.out.println("semantic error: line " + line + ", function " + funcName + " has only one argument");
+		    errorsFound.add("semantic error: line " + line + ", function " + funcName + " has only one argument");
 		    return false;
 	      }
 
 	      //second argument of function "f1" must be an array
 	      else if (numCalledArgs != numFuncArgs) {
-		    System.out.println("semantic error: line " + line + ", function " + funcName + " has only different number of arguments");
+		    errorsFound.add("semantic error: line " + line + ", function " + funcName + " has only different number of arguments");
 		    return false;
 	      }
 
@@ -238,11 +240,11 @@ public class SAnalysisFunctions {
 		  // check if variable types match
 		  //System.out.println("--------------> " + funcVar.type + " ----- " + argVar.type);
 		  if (funcVar.type.equals("int[]") && !argVar.type.contains("[]")) {
-		      System.out.println("semantic error: line " + line + ", argument " + (i+1) + " (" + argVar.name + ") of function " + funcName + " must be an array");
+		      errorsFound.add("semantic error: line " + line + ", argument " + (i+1) + " (" + argVar.name + ") of function " + funcName + " must be an array");
 		  }
 
 		  else if (!funcVar.type.equals("int[]") && argVar.type.contains("[]")) {
-		      System.out.println("semantic error: line " + line + ", argument " + (i+1) + " (" + argVar.name + ") of function " + funcName + " must be scalar");
+		      errorsFound.add("semantic error: line " + line + ", argument " + (i+1) + " (" + argVar.name + ") of function " + funcName + " must be scalar");
 		  }
 
 	      }

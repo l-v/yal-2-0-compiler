@@ -52,11 +52,11 @@ public class SymbolTable extends Object {
 	  public void addTree(Node root) {
 
 	    int childNum = root.jjtGetNumChildren();
-	    
+	    System.out.println("entrou");
 	    for (int i=0; i!=childNum; i++) {
 		
 			Node newNode = root.jjtGetChild(i);
-			//System.out.println("--> "+newNode.toString() + ":" + newNode.getVal());
+			System.out.println("--> "+newNode.toString() + ":" + newNode.getVal());
 	
 			String varName = newNode.getVal();
 			String varType = newNode.toString();
@@ -77,7 +77,7 @@ public class SymbolTable extends Object {
 	  public void addDeclNode(Node node) {
 		
 		Node DeclID = node.jjtGetChild(0);
-		//System.out.println("--> "+DeclID.toString() + ":" + DeclID.getVal());
+		System.out.println("--> "+DeclID.toString() + ":" + DeclID.getVal());
 		
 		for (int i=1; i!=node.jjtGetNumChildren(); i++) {
 		    
@@ -102,7 +102,7 @@ public class SymbolTable extends Object {
 
 		
 	     Node FuncID = node.jjtGetChild(0);
-	     //System.out.println("--> "+FuncID.toString() + ":" + FuncID.getVal());
+	     System.out.println("--> "+FuncID.toString() + ":" + FuncID.getVal());
 
 	     newTable.editTable(FuncID.getVal(), node.toString());
 	     
@@ -110,7 +110,7 @@ public class SymbolTable extends Object {
 
 	     // adiciona argumentos da funcao, se estes existirem
 	     if (node.jjtGetNumChildren()>2) {  
-		  
+		  System.out.println("function has children");
 		  int index=1;
 		  for (int i=1; i!=node.jjtGetNumChildren(); i++) {
 
@@ -118,7 +118,7 @@ public class SymbolTable extends Object {
 
 		      // verifica por retorno da funcao
 		      if (childNode.toString().equals("AssignID")) {
-			  funcReturn = newTable.name;
+			  funcReturn = newTable.name; System.out.println("encontrou assign");
 			  newTable.name = childNode.getVal();
 
 			  // verifica se retorno é array
@@ -127,7 +127,7 @@ public class SymbolTable extends Object {
 		      }
 
 		      // procura argumentos
-		      else if (childNode.toString().equals("Args"))  {
+		      else if (childNode.toString().equals("Args"))  { System.out.println("encontrou args");
 			  index = i;
 			  break;
 		      }
@@ -213,7 +213,7 @@ public class SymbolTable extends Object {
 
 		// apenas para analise erros semanticos 
 		else if (stmtType.equals("CallID")) {
-		   
+		   System.out.println("found CALL");
 		    // verifica se funcao pertence a este modulo
 		    Boolean checkFunc = true;
 		    if (i+1 != numStmt) { 
@@ -244,7 +244,7 @@ public class SymbolTable extends Object {
 
 	  // Adiciona uma instrucao de Assign
 	  public void addAssign(Node node, SymbolTable table) {
-
+System.out.println("addAssign!");
 	     Node lhs = node.jjtGetChild(0);
 	     Node rhs = node.jjtGetChild(1);
 	     //System.out.println("==="+lhs.getVal());
@@ -266,7 +266,7 @@ public class SymbolTable extends Object {
 	  
 		Node term = rhs.jjtGetChild(i);
 		
-
+System.out.println("assign for!");
 		if (term.toString().equals("Term") && term.jjtGetChild(0).toString().equals("ID")) {
 
 		      //check if it is a function and not a variable, and if function belongs to this module
@@ -285,9 +285,9 @@ public class SymbolTable extends Object {
 
 		      }
 		    
-		  
+		      
 		      if (isFunction && inModule) {
-
+			  System.out.println("isFunction && inModule");
 			  Node termChild = term.jjtGetChild(0);
 			  Node argsNode = null;
 
@@ -296,8 +296,10 @@ public class SymbolTable extends Object {
 		    
 
 			  // assign tem variaveis: ver possiveis erros
+			  System.out.println("VAMOS POR ERROS!");
 			  OnHoldError newError = new OnHoldError(termChild.getVal(), "assign", termChild.getLine(), argsNode, lhs.getVal());
 			  SAnalysis.errors.add(newError);
+System.out.println("ERROS -> " + SAnalysis.errors.size());
 
 		      }
 		}
