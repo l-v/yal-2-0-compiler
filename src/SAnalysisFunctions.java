@@ -236,11 +236,12 @@ public class SAnalysisFunctions {
 		 
 
 		  // check if variable types match
-		  if (funcVar.type.equals("int[]") && !argVar.type.equals("int[]")) {
+		  //System.out.println("--------------> " + funcVar.type + " ----- " + argVar.type);
+		  if (funcVar.type.equals("int[]") && !argVar.type.contains("[]")) {
 		      System.out.println("semantic error: line " + line + ", argument " + (i+1) + " (" + argVar.name + ") of function " + funcName + " must be an array");
 		  }
 
-		  else if (!funcVar.type.equals("int[]") && argVar.type.equals("int[]")) {
+		  else if (!funcVar.type.equals("int[]") && argVar.type.contains("[]")) {
 		      System.out.println("semantic error: line " + line + ", argument " + (i+1) + " (" + argVar.name + ") of function " + funcName + " must be scalar");
 		  }
 
