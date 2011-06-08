@@ -2,7 +2,8 @@
 /*@egen*//**
  * JavaCC template file created by SF JavaCC plugin 1.5.17+ wizard for JavaCC 1.5.0+
  */
- 
+
+
 options
 {
   JDK_VERSION = "1.5";
@@ -1023,23 +1024,41 @@ void Term()      : {Token tInt; Token t0; Token t1; Token tSize; Token tOp;}
                        jjtree.closeNodeScope(jjtn005, true);
                      }
                    }
-/*@egen*/         )? < RPAR >)
+/*@egen*/         )? < RPAR >/*@bgen(jjtree) IsFunc */
+                                                      {
+                                                        SimpleNode jjtn006 = new SimpleNode(JJTISFUNC);
+                                                        boolean jjtc006 = true;
+                                                        jjtree.openNodeScope(jjtn006);
+                                                      }
+                                                      try {
+/*@egen*//*@bgen(jjtree)*/
+                                                      {
+                                                        jjtree.closeNodeScope(jjtn006, true);
+                                                        jjtc006 = false;
+                                                      }
+/*@egen*/ {jjtn006.val = "IsFunc"; System.out.println("somethign");}/*@bgen(jjtree)*/
+                                                      } finally {
+                                                        if (jjtc006) {
+                                                          jjtree.closeNodeScope(jjtn006, true);
+                                                        }
+                                                      }
+/*@egen*/        )
 	| ( ("[" Index() /*#Index*/ "]") | ("." tSize=<SIZE>/*@bgen(jjtree) Size */
                                                              {
-                                                               SimpleNode jjtn006 = new SimpleNode(JJTSIZE);
-                                                               boolean jjtc006 = true;
-                                                               jjtree.openNodeScope(jjtn006);
+                                                               SimpleNode jjtn007 = new SimpleNode(JJTSIZE);
+                                                               boolean jjtc007 = true;
+                                                               jjtree.openNodeScope(jjtn007);
                                                              }
                                                              try {
 /*@egen*//*@bgen(jjtree)*/
                                                              {
-                                                               jjtree.closeNodeScope(jjtn006, true);
-                                                               jjtc006 = false;
+                                                               jjtree.closeNodeScope(jjtn007, true);
+                                                               jjtc007 = false;
                                                              }
-/*@egen*/ {jjtn006.val=tSize.image;}/*@bgen(jjtree)*/
+/*@egen*/ {jjtn007.val=tSize.image;}/*@bgen(jjtree)*/
                                                              } finally {
-                                                               if (jjtc006) {
-                                                                 jjtree.closeNodeScope(jjtn006, true);
+                                                               if (jjtc007) {
+                                                                 jjtree.closeNodeScope(jjtn007, true);
                                                                }
                                                              }
 /*@egen*/      )? ))
@@ -1375,44 +1394,49 @@ void Index() : {/*@bgen(jjtree) Index */
 {/*@bgen(jjtree) Index */
   try {
 /*@egen*/
-  (/*@bgen(jjtree) IndexID */
-    {
-      SimpleNode jjtn001 = new SimpleNode(JJTINDEXID);
-      boolean jjtc001 = true;
-      jjtree.openNodeScope(jjtn001);
-    }
-    try {
-/*@egen*/ t0=<ID>/*@bgen(jjtree)*/
-    } finally {
-      if (jjtc001) {
-        jjtree.closeNodeScope(jjtn001, true);
-      }
-    }
-/*@egen*/          |/*@bgen(jjtree) INTEGER */
-                       {
-                         SimpleNode jjtn002 = new SimpleNode(JJTINTEGER);
-                         boolean jjtc002 = true;
-                         jjtree.openNodeScope(jjtn002);
-                       }
-                       try {
-/*@egen*/ t0=<INTEGER>/*@bgen(jjtree)*/
-                       } finally {
-                         if (jjtc002) {
-                           jjtree.closeNodeScope(jjtn002, true);
-                         }
-                       }
+  ( t0=<ID>/*@bgen(jjtree) IndexID */
+            {
+              SimpleNode jjtn001 = new SimpleNode(JJTINDEXID);
+              boolean jjtc001 = true;
+              jjtree.openNodeScope(jjtn001);
+            }
+            try {
+/*@egen*//*@bgen(jjtree)*/
+            {
+              jjtree.closeNodeScope(jjtn001, true);
+              jjtc001 = false;
+            }
+/*@egen*/ {jjtn001.val = t0.image;}/*@bgen(jjtree)*/
+            } finally {
+              if (jjtc001) {
+                jjtree.closeNodeScope(jjtn001, true);
+              }
+            }
+/*@egen*/          | t0=<INTEGER>/*@bgen(jjtree) INTEGER */
+                                                              {
+                                                                SimpleNode jjtn002 = new SimpleNode(JJTINTEGER);
+                                                                boolean jjtc002 = true;
+                                                                jjtree.openNodeScope(jjtn002);
+                                                              }
+                                                              try {
+/*@egen*//*@bgen(jjtree)*/
+                                                              {
+                                                                jjtree.closeNodeScope(jjtn002, true);
+                                                                jjtc002 = false;
+                                                              }
+/*@egen*/ {jjtn002.val = t0.image;}/*@bgen(jjtree)*/
+                                                              } finally {
+                                                                if (jjtc002) {
+                                                                  jjtree.closeNodeScope(jjtn002, true);
+                                                                }
+                                                              }
 /*@egen*/         )/*@bgen(jjtree)*/
-                                              {
-                                                jjtree.closeNodeScope(jjtn000, true);
-                                                jjtc000 = false;
-                                              }
-/*@egen*/ {jjtn000.val = t0.image;}/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
       jjtree.closeNodeScope(jjtn000, true);
     }
   }
-/*@egen*/ 
+/*@egen*/  
 }
   
 

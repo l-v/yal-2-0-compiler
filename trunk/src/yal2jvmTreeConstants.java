@@ -32,19 +32,20 @@ public interface yal2jvmTreeConstants
   public int JJTID = 28;
   public int JJTID2 = 29;
   public int JJTARGLIST = 30;
-  public int JJTSIZE = 31;
-  public int JJTEXPRTEST = 32;
-  public int JJTWHILE = 33;
-  public int JJTIF = 34;
-  public int JJTCALLID = 35;
-  public int JJTCALLID2 = 36;
-  public int JJTARGUMENT = 37;
-  public int JJTARGID = 38;
-  public int JJTSTRING = 39;
-  public int JJTARRAYINDEX = 40;
-  public int JJTSCALARSIZE = 41;
-  public int JJTINDEX = 42;
-  public int JJTINDEXID = 43;
+  public int JJTISFUNC = 31;
+  public int JJTSIZE = 32;
+  public int JJTEXPRTEST = 33;
+  public int JJTWHILE = 34;
+  public int JJTIF = 35;
+  public int JJTCALLID = 36;
+  public int JJTCALLID2 = 37;
+  public int JJTARGUMENT = 38;
+  public int JJTARGID = 39;
+  public int JJTSTRING = 40;
+  public int JJTARRAYINDEX = 41;
+  public int JJTSCALARSIZE = 42;
+  public int JJTINDEX = 43;
+  public int JJTINDEXID = 44;
 
 
   public String[] jjtNodeName = {
@@ -79,6 +80,7 @@ public interface yal2jvmTreeConstants
     "ID",
     "ID2",
     "ArgList",
+    "IsFunc",
     "Size",
     "Exprtest",
     "While",
@@ -94,4 +96,4 @@ public interface yal2jvmTreeConstants
     "IndexID",
   };
 }
-/* JavaCC - OriginalChecksum=aa4d0b5b1bcae9a9972c59fcc5edbce2 (do not edit this line) */
+/* JavaCC - OriginalChecksum=392dd3f5520ea1a717d4d0e1645020a6 (do not edit this line) */

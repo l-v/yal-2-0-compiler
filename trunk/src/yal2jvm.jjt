@@ -156,7 +156,7 @@ void ScalarElement() : {Token t0;}
   t0=<ID> {jjtThis.val=t0.image;} #ScalarID
 }
 
-void Stmtlst() #void : {}
+void Stmtlst() : {}
 {
   ( Stmt() )*
 }
@@ -260,7 +260,7 @@ void ScalarAccess() #void : {Token t0; Token tSize;}
 
 void Index() : {Token t0;}
 {
-  ( t0=<ID> #IndexID | t0=<INTEGER> #INTEGER) {jjtThis.val = t0.image;} 
+  ( t0=<ID> {jjtThis.val = t0.image;} #IndexID | t0=<INTEGER> {jjtThis.val = t0.image;} #INTEGER)  
 }
   
 

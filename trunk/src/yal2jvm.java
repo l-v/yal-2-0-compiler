@@ -1015,6 +1015,18 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
           ;
         }
         jj_consume_token(RPAR);
+                                                        SimpleNode jjtn006 = new SimpleNode(JJTISFUNC);
+                                                        boolean jjtc006 = true;
+                                                        jjtree.openNodeScope(jjtn006);
+        try {
+                                                        jjtree.closeNodeScope(jjtn006, true);
+                                                        jjtc006 = false;
+                                                       jjtn006.val = "IsFunc"; System.out.println("somethign");
+        } finally {
+                                                        if (jjtc006) {
+                                                          jjtree.closeNodeScope(jjtn006, true);
+                                                        }
+        }
       } else {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case 31:
@@ -1028,16 +1040,16 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
           case 33:
             jj_consume_token(33);
             tSize = jj_consume_token(SIZE);
-                                                               SimpleNode jjtn006 = new SimpleNode(JJTSIZE);
-                                                               boolean jjtc006 = true;
-                                                               jjtree.openNodeScope(jjtn006);
+                                                               SimpleNode jjtn007 = new SimpleNode(JJTSIZE);
+                                                               boolean jjtc007 = true;
+                                                               jjtree.openNodeScope(jjtn007);
             try {
-                                                               jjtree.closeNodeScope(jjtn006, true);
-                                                               jjtc006 = false;
-                                                              jjtn006.val=tSize.image;
+                                                               jjtree.closeNodeScope(jjtn007, true);
+                                                               jjtc007 = false;
+                                                              jjtn007.val=tSize.image;
             } finally {
-                                                               if (jjtc006) {
-                                                                 jjtree.closeNodeScope(jjtn006, true);
+                                                               if (jjtc007) {
+                                                                 jjtree.closeNodeScope(jjtn007, true);
                                                                }
             }
             break;
@@ -1400,27 +1412,33 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     try {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case ID:
-      SimpleNode jjtn001 = new SimpleNode(JJTINDEXID);
-      boolean jjtc001 = true;
-      jjtree.openNodeScope(jjtn001);
+        t0 = jj_consume_token(ID);
+              SimpleNode jjtn001 = new SimpleNode(JJTINDEXID);
+              boolean jjtc001 = true;
+              jjtree.openNodeScope(jjtn001);
         try {
-          t0 = jj_consume_token(ID);
+              jjtree.closeNodeScope(jjtn001, true);
+              jjtc001 = false;
+             jjtn001.val = t0.image;
         } finally {
-      if (jjtc001) {
-        jjtree.closeNodeScope(jjtn001, true);
-      }
+              if (jjtc001) {
+                jjtree.closeNodeScope(jjtn001, true);
+              }
         }
         break;
       case INTEGER:
-                         SimpleNode jjtn002 = new SimpleNode(JJTINTEGER);
-                         boolean jjtc002 = true;
-                         jjtree.openNodeScope(jjtn002);
+        t0 = jj_consume_token(INTEGER);
+                                                                SimpleNode jjtn002 = new SimpleNode(JJTINTEGER);
+                                                                boolean jjtc002 = true;
+                                                                jjtree.openNodeScope(jjtn002);
         try {
-          t0 = jj_consume_token(INTEGER);
+                                                                jjtree.closeNodeScope(jjtn002, true);
+                                                                jjtc002 = false;
+                                                               jjtn002.val = t0.image;
         } finally {
-                         if (jjtc002) {
-                           jjtree.closeNodeScope(jjtn002, true);
-                         }
+                                                                if (jjtc002) {
+                                                                  jjtree.closeNodeScope(jjtn002, true);
+                                                                }
         }
         break;
       default:
@@ -1428,9 +1446,6 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
         jj_consume_token(-1);
         throw new ParseException();
       }
-                                                jjtree.closeNodeScope(jjtn000, true);
-                                                jjtc000 = false;
-                                               jjtn000.val = t0.image;
     } finally {
     if (jjtc000) {
       jjtree.closeNodeScope(jjtn000, true);
@@ -1450,11 +1465,6 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     try { return !jj_3_2(); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(1, xla); }
-  }
-
-  static private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
-    return false;
   }
 
   static private boolean jj_3R_8() {
@@ -1499,6 +1509,11 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     xsp = jj_scanpos;
     if (jj_3R_8()) jj_scanpos = xsp;
     if (jj_scan_token(RPAR)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_24() {
+    if (jj_scan_token(INTEGER)) return true;
     return false;
   }
 
@@ -1600,11 +1615,6 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     return false;
   }
 
-  static private boolean jj_3R_24() {
-    if (jj_scan_token(INTEGER)) return true;
-    return false;
-  }
-
   static private boolean jj_3R_9() {
     if (jj_scan_token(ID)) return true;
     Token xsp;
@@ -1613,6 +1623,11 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     jj_scanpos = xsp;
     if (jj_3R_13()) return true;
     }
+    return false;
+  }
+
+  static private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
     return false;
   }
 

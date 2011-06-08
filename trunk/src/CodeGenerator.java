@@ -155,7 +155,7 @@ public class CodeGenerator extends Object {
 		  else if(newNode.toString().equals("Args"))
 			  args += translateArgs(newNode);
 		  else if(newNode.toString().equals("FuncBody"))
-			  body += translateFuncBody(newNode,name);
+			  body += translateFuncBody(newNode.jjtGetChild(0),name);
 	  }
 	
 	  if(name.equals("main"))
@@ -221,6 +221,7 @@ public class CodeGenerator extends Object {
 		  {
 			  Node left = newNode.jjtGetChild(0);
 			  Node right = newNode.jjtGetChild(1);
+			  
 		  }
 		  else if(newNode.toString().equals("While"))
 		  {
@@ -238,6 +239,15 @@ public class CodeGenerator extends Object {
 	    
 	  result += limitStack + numStack + "\n";
 	  result += limitLocals + "\n";
+	  
+	  return result;
+  }
+  
+  public String leftElement (Node leftnode)
+  {
+	  String result = "";
+	  
+	  //if()
 	  
 	  return result;
   }
