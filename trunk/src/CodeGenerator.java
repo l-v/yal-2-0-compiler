@@ -5,6 +5,7 @@ public class CodeGenerator extends Object {
 
   SymbolTable st;
   String filename;
+  LinkedList<Variable> globalVars;
 
   
   CodeGenerator(String file, SymbolTable codeSt, Node rootNode) {
@@ -194,8 +195,8 @@ public class CodeGenerator extends Object {
   {
 	  String result = "";
 	  
-	  HashMap<Integer, Variable> localVariables = getLocalVariables("Func", funcName);
-	  LinkedList<Variable> globalVars = st.localVars;
+	  LinkedList<Variable> localVariables = getLocalVariables("Func", funcName);
+	  globalVars = st.localVars;
 	  
 	  String limitStack = ".limit stack ";
 	  String limitLocals = ".limit locals ";
@@ -204,7 +205,7 @@ public class CodeGenerator extends Object {
 	  limitLocals += (localVariables.size());
 	  int numStack = 0;
 	  
-	  body += translateStmtLst(bodyNode.jjtGetChild(0));
+	  body += translateStmtLst(bodyNode.jjtGetChild(0), localVariables);
 	    
 	  result += limitStack + numStack + "\n";
 	  result += limitLocals + "\n\n";
@@ -213,7 +214,7 @@ public class CodeGenerator extends Object {
 	  return result;
   }
   
-  public String translateStmtLst(Node stmtNode)
+  public String translateStmtLst(Node stmtNode, LinkedList<Variable> localVariables)
   {
 	  String result = "";
 	  
@@ -228,7 +229,7 @@ public class CodeGenerator extends Object {
 			  Node left = newNode.jjtGetChild(0);
 			  Node right = newNode.jjtGetChild(1);
 			  
-			  result += translateLeftElement(left) + "\n";
+			  result += translateLeftElement(left, localVariables) + "\n";
 			  
 		  }
 		  else if(newNode.toString().equals("While"))
@@ -248,36 +249,44 @@ public class CodeGenerator extends Object {
 	  return result;
   }
   
-  public String translateLeftElement(Node leftnode)
+  public String translateLeftElement(Node leftnode, LinkedList<Variable> localVariables)
   {
 	  String result = "";
 	  
-	  result += leftnode.getVal();
+	  String var = leftnode.getVal();
 	  
 	  if(leftnode.jjtGetNumChildren() != 0) //index
 	  {
-		  System.out.println("yeah!");
-		  
 		  Node index = leftnode.jjtGetChild(0).jjtGetChild(0);
-		  
-		  System.out.println(index.toString());
 		  
 		  if(index.toString().equals("INTEGER"))
 		  {
-			  result += "[" + index.getVal() + "]";
+			  if(containsGlobal(var, globalVars))
+			  {
+				  result += "getstatic fields/" + var + "[I";
+			  }
+			  else
+			  {
+				  //int number = ;
+			  }
+			  
 		  }
 		  else if(index.toString().equals("IndexID"))
 		  {
 			  result += "[" + index.getVal() + "]";
 		  }
 	  }
+	  else //var integer ou size
+	  {
+		  
+	  }
 	  
 	  return result;
   }
   
-  public HashMap<Integer, Variable> getLocalVariables(String type, String name)
+  public LinkedList<Variable> getLocalVariables(String type, String name)
   {
-	  HashMap<Integer, Variable> result = new HashMap<Integer, Variable>();
+	  LinkedList<Variable> result = new LinkedList<Variable>();
 	  
 	  SymbolTable functionST = st.getSymbolTable(type, name); //Tabela de simbolos correspondente a funcao
 	  
@@ -287,10 +296,10 @@ public class CodeGenerator extends Object {
 	  int i;
 	  
 	  for(i = 0; i < argsNum; i++)
-		  result.put(i,functionST.funcArgs.get(i));
+		  result.add(functionST.funcArgs.get(i));
 	  
 	  for(i = 0; i < localsNum; i++)
-		  result.put(i + argsNum, functionST.localVars.get(i));
+		  result.add(functionST.localVars.get(i));
 	  
 	  return result;
   }
@@ -311,5 +320,19 @@ public class CodeGenerator extends Object {
 	 System.err.println("Error: " + e.getMessage());
 	}
   }
+
+
+  public boolean containsGlobal(String var, LinkedList<Variable> globals )
+	{
+		for(int i = 0; i < globals.size(); i++)
+		{
+			Variable v = globals.get(i);
+			
+			if(v.name == var)
+				return true;
+		}
+		
+		return false;
+	}
 
 }
