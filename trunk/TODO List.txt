@@ -1,0 +1,34 @@
+A FAZER:
+- Corrigir: se tivermos d[]; nos atributos do módulo, a árvore sintáctica pensa que é um inteiro e é um array. (Solução IsArray)
+- Corrigir: uma variável declarada dentro do scope de uma função é sempre local mesmo que existam variáveis globais com o mesmo nome e não pode ser.
+ 
+ESTRUTURA DA ÁRVORE
+
+MODULE
+	MID
+	FUNC
+	DEC
+
+DEC
+	ISARRAY -> já coloquei no .jjt e utilizei no CodeGenerator.java falta agora colocar na tabela de símbolos
+	ARRAYSIZE
+	ADDSUBOP
+	INICVAR
+
+ARRAYSIZE
+	SCALAR
+	INTEGER
+
+SCALAR
+	SCALARID
+	SCALARSIZE
+
+LHS
+	Id
+	size
+	INDEX
+
+INDEX
+	INDEXID
+	INTEGER
+	

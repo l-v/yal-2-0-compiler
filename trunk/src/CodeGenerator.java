@@ -49,8 +49,6 @@ public class CodeGenerator extends Object {
 
       result += header + "\n" + globals + "\n" + arrayInitializations + "\n" + functions;
       
-      System.out.println(result);
-      
       createFile(result);
 
   }
@@ -204,6 +202,7 @@ public class CodeGenerator extends Object {
 	  
 	  String limitStack = ".limit stack ";
 	  String limitLocals = ".limit locals ";
+	  String body = "";
 	  
 	  int numArgs = functionST.funcArgs.size();
 	  int numLocal= functionST.localVars.size();
@@ -222,6 +221,8 @@ public class CodeGenerator extends Object {
 			  Node left = newNode.jjtGetChild(0);
 			  Node right = newNode.jjtGetChild(1);
 			  
+			  body += translateLeftElement(left) + "\n";
+			  
 		  }
 		  else if(newNode.toString().equals("While"))
 		  {
@@ -238,18 +239,34 @@ public class CodeGenerator extends Object {
 	  }
 	    
 	  result += limitStack + numStack + "\n";
-	  result += limitLocals + "\n";
+	  result += limitLocals + "\n\n";
+	  result += body + "\n";
 	  
 	  return result;
   }
   
-  public String leftElement (Node leftnode)
+  public String translateLeftElement(Node leftnode)
   {
 	  String result = "";
 	  
-	  if(leftnode.jjtGetNumChildren() == 0) //size ou var
+	  result += leftnode.getVal();
+	  
+	  if(leftnode.jjtGetNumChildren() != 0) //index
 	  {
+		  System.out.println("yeah!");
 		  
+		  Node index = leftnode.jjtGetChild(0).jjtGetChild(0);
+		  
+		  System.out.println(index.toString());
+		  
+		  if(index.toString().equals("INTEGER"))
+		  {
+			  result += "[" + index.getVal() + "]";
+		  }
+		  else if(index.toString().equals("IndexID"))
+		  {
+			  result += "[" + index.getVal() + "]";
+		  }
 	  }
 	  
 	  return result;

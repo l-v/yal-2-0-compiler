@@ -22,12 +22,22 @@ print_array([III)[I
 .limit stack 0
 .limit locals 9
 
+size
+a[e]
+a[20]
+a
+i
+i
+
+
 .end method
 
 .method public static
 main([Ljava/lang/String;)V
 .limit stack 0
 .limit locals 0
+
+
 
 .end method
 
