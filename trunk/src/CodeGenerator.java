@@ -5,16 +5,12 @@ public class CodeGenerator extends Object {
 
   SymbolTable st;
   String filename;
-  HashMap<Variable,Integer> variables;
-  int regCounter;
 
   
   CodeGenerator(String file, SymbolTable codeSt, Node rootNode) {
       
       st = codeSt;
       filename = file;
-      variables = new HashMap<Variable, Integer>();
-      regCounter = 0;
       
       String result = "";
       String header = "";
@@ -153,7 +149,7 @@ public class CodeGenerator extends Object {
 		  else if(newNode.toString().equals("Args"))
 			  args += translateArgs(newNode);
 		  else if(newNode.toString().equals("FuncBody"))
-			  body += translateFuncBody(newNode.jjtGetChild(0),name);
+			  body += translateFuncBody(newNode,name);
 	  }
 	
 	  if(name.equals("main"))
@@ -198,30 +194,41 @@ public class CodeGenerator extends Object {
   {
 	  String result = "";
 	  
-	  SymbolTable functionST = st.getSymbolTable("Func", funcName); //Tabela de simbolos correspondente a funcao
+	  HashMap<Integer, Variable> localVariables = getLocalVariables("Func", funcName);
+	  LinkedList<Variable> globalVars = st.localVars;
 	  
 	  String limitStack = ".limit stack ";
 	  String limitLocals = ".limit locals ";
 	  String body = "";
 	  
-	  int numArgs = functionST.funcArgs.size();
-	  int numLocal= functionST.localVars.size();
+	  limitLocals += (localVariables.size());
 	  int numStack = 0;
 	  
-	  limitLocals += (numArgs + numLocal);
+	  body += translateStmtLst(bodyNode.jjtGetChild(0));
+	    
+	  result += limitStack + numStack + "\n";
+	  result += limitLocals + "\n\n";
+	  result += body + "\n";
 	  
-	  int numOfStmtLst = bodyNode.jjtGetNumChildren();
+	  return result;
+  }
+  
+  public String translateStmtLst(Node stmtNode)
+  {
+	  String result = "";
+	  
+	  int numOfStmtLst = stmtNode.jjtGetNumChildren();
 	  
 	  for(int i = 0; i < numOfStmtLst; i++)
 	  {
-		  Node newNode = bodyNode.jjtGetChild(i);
+		  Node newNode = stmtNode.jjtGetChild(i);
 		  
 		  if(newNode.toString().equals("Assign"))
 		  {
 			  Node left = newNode.jjtGetChild(0);
 			  Node right = newNode.jjtGetChild(1);
 			  
-			  body += translateLeftElement(left) + "\n";
+			  result += translateLeftElement(left) + "\n";
 			  
 		  }
 		  else if(newNode.toString().equals("While"))
@@ -237,10 +244,6 @@ public class CodeGenerator extends Object {
 			  
 		  }
 	  }
-	    
-	  result += limitStack + numStack + "\n";
-	  result += limitLocals + "\n\n";
-	  result += body + "\n";
 	  
 	  return result;
   }
@@ -268,6 +271,26 @@ public class CodeGenerator extends Object {
 			  result += "[" + index.getVal() + "]";
 		  }
 	  }
+	  
+	  return result;
+  }
+  
+  public HashMap<Integer, Variable> getLocalVariables(String type, String name)
+  {
+	  HashMap<Integer, Variable> result = new HashMap<Integer, Variable>();
+	  
+	  SymbolTable functionST = st.getSymbolTable(type, name); //Tabela de simbolos correspondente a funcao
+	  
+	  int argsNum = functionST.funcArgs.size();
+	  int localsNum = functionST.localVars.size();
+	  
+	  int i;
+	  
+	  for(i = 0; i < argsNum; i++)
+		  result.put(i,functionST.funcArgs.get(i));
+	  
+	  for(i = 0; i < localsNum; i++)
+		  result.put(i + argsNum, functionST.localVars.get(i));
 	  
 	  return result;
   }

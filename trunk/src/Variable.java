@@ -39,11 +39,20 @@ public class Variable {
 
 	public void printVar() {
 
-	    if (arraySize.equals("-1"))
-	      System.out.println(name + ":" + type);
-	    else
-	      System.out.println(name + ":" + type + "(" + arraySize + ")");
+	      System.out.println(this.toString());
 
+	}
+	
+	public String toString() {
+		
+		String result = "";
+		
+		if (arraySize.equals("-1"))
+		    result += name + ":" + type;
+		else
+		    result += name + ":" + type + "(" + arraySize + ")";
+		
+		return result;
 	}
 	
 }
