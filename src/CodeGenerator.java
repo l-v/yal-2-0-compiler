@@ -6,10 +6,11 @@ public class CodeGenerator extends Object {
   SymbolTable st;
   String filename;
   LinkedList<Variable> globalVars;
+  int numStack;
 
   
   CodeGenerator(String file, SymbolTable codeSt, Node rootNode) {
-      
+
       st = codeSt;
       filename = file;
       
@@ -47,7 +48,6 @@ public class CodeGenerator extends Object {
       result += header + "\n" + globals + "\n" + arrayInitializations + "\n" + functions;
       
       createFile(file, result);
-
   }
 
   public String declareGlobal(Node declNode)
@@ -130,6 +130,8 @@ public class CodeGenerator extends Object {
           String body = "";
           String footer = ".end method";
           
+          numStack = 0;
+          
           int childNum = funcNode.jjtGetNumChildren();
           
           for(int i = 0; i < childNum; i++)
@@ -203,7 +205,6 @@ public class CodeGenerator extends Object {
           String body = "";
           
           limitLocals += (localVariables.size());
-          int numStack = 0;
           
           body += translateStmtLst(bodyNode.jjtGetChild(0), localVariables);
             
@@ -226,49 +227,43 @@ public class CodeGenerator extends Object {
                   
                   if(newNode.toString().equals("Assign"))
                   {
-                          Node left = newNode.jjtGetChild(0);
-                          Node right = newNode.jjtGetChild(1);
+                      Node left = newNode.jjtGetChild(0);
+                      Node right = newNode.jjtGetChild(1);
                           
-                          result += translateLeftElement(left, localVariables) + "\n";
-                          
+                      result += translateLeftElement(left, localVariables) + "\n";     
                   }
                   else if(newNode.toString().equals("While"))
-                  {
-                          result += translateWhile(newNode, localVariables);
-                  }
+                	  result += translateWhile(newNode, localVariables);
                   else if(newNode.toString().equals("If"))
+                	  result += translateIf(newNode, localVariables);
+                  else if (newNode.toString().equals("CallID"))
                   {
-                          result += translateIf(newNode, localVariables);
+                	  Node call2 = null;
+                	  Node args = null;
+
+                	  if (i + 1 < numOfStmtLst)
+                	  {
+                		  Node temp = stmtNode.jjtGetChild(i + 1);
+
+                		  if (temp.toString().equals("CallID2"))
+								call2 = temp;
+                		  else if (temp.toString().equals("ArgList"))
+								args = temp;
+							
+                	  }
+                	  else if (i + 2 != numOfStmtLst)
+                	  {
+                		  Node temp = stmtNode.jjtGetChild(i + 2);
+
+                		  if (temp.toString().equals("ArgList")) 
+                			  args = temp;
+					
+                	  }
+
+                	  result += translateCall(newNode, call2, args, localVariables);
+
                   }
-                  else if(newNode.toString().equals("CallID"))
-                  {
-			Node call2 = null;
-			Node args = null;
-
-			if (i+1 < numOfStmtLst) {
-			      Node temp = stmtNode.jjtGetChild(i+1);
-
-			      if (temp.toString().equals("CallID2")) {
-				  call2 = temp;
-			      }
-
-			      else if (temp.toString().equals("ArgList")) {
-				  args = temp;
-			      }
-			}
-
-			else if (i+2 != numOfStmtLst) {
-			     Node temp = stmtNode.jjtGetChild(i+2);
-				
-			      if (temp.toString().equals("ArgList")) {
-				  args = temp;
-			      }
-			}
-
-			result += translateCall(newNode, call2, args, localVariables);
-			    
-                  }
-          }
+		}
           
           return result;
   }
@@ -280,30 +275,42 @@ public class CodeGenerator extends Object {
           String var = leftnode.getVal();
           
           if(leftnode.jjtGetNumChildren() != 0) //index
-          {
-                  Node index = leftnode.jjtGetChild(0).jjtGetChild(0);
+          {      	  
+              if(listContainsVar(var, globalVars) != -1) //array global
+            	  result += "getstatic fields/" + var + "[I\n";
+              else //array local
+              {
+            	  int indice = listContainsVar(var,localVariables);
+            	  
+            	  if(indice != -1)
+            		  result += "aload_" + indice + "\n";
+              }
+        	  
+              Node index = leftnode.jjtGetChild(0).jjtGetChild(0);
                   
-                  if(index.toString().equals("INTEGER"))
+              if(index.toString().equals("INTEGER"))
+            	  result += "bipush " + index.getVal() + "\n";
+              else if(index.toString().equals("IndexID"))
+              {
+            	  String indexid = index.getVal();
+            	  
+            	  if(listContainsVar(indexid, globalVars) != -1)
+                	  result += "getstatic fields/" + indexid + "I\n";
+                  else
                   {
-                          if(containsGlobal(var, globalVars))
-                          {
-                                  result += "getstatic fields/" + var + "[I";
-                          }
-                          else
-                          {
-                                  //int number = ;
-                          }
-                          
+                	  int indice = listContainsVar(indexid,localVariables);
+                	  
+                	  if(indice != -1)
+                		  result += "iload_" + indice + "\n";
                   }
-                  else if(index.toString().equals("IndexID"))
-                  {
-                          result += "[" + index.getVal() + "]";
-                  }
+              }
           }
           else //var integer ou size
           {
-                  
+        	  
           }
+          
+          System.out.println(result);
           
           return result;
   }
@@ -327,7 +334,6 @@ public class CodeGenerator extends Object {
           
           return result;
   }
-
 
   public String exprTest(Node testNode) {
       String result = "\n;exprTest";
@@ -367,7 +373,6 @@ public class CodeGenerator extends Object {
       return result;
   }
 
-
   public String translateWhile(Node whileNode, LinkedList<Variable> localVariables) {
 
 	  String result = "\n;WHILE";
@@ -406,7 +411,6 @@ public class CodeGenerator extends Object {
 
 	  return result;
   }
-
 
   public String translateCall(Node callNode1, Node callNode2, Node argList, LinkedList<Variable> localVariables) {
       
@@ -457,11 +461,10 @@ public class CodeGenerator extends Object {
 	return result;
   }
 
-
   public void createFile(String fileName, String contents) {
       try{
         // Create file 
-        
+    	  
     FileWriter fstream = new FileWriter(fileName);
         BufferedWriter out = new BufferedWriter(fstream);
         out.write(contents);
@@ -475,18 +478,16 @@ public class CodeGenerator extends Object {
         }
   }
 
-
-  public boolean containsGlobal(String var, LinkedList<Variable> globals )
-        {
-                for(int i = 0; i < globals.size(); i++)
-                {
-                        Variable v = globals.get(i);
+  public int listContainsVar(String var, LinkedList<Variable> list )
+  {  
+                for(int i = 0; i < list.size(); i++)
+                {              	
+                        Variable v = list.get(i);
                         
-                        if(v.name == var)
-                                return true;
+                        if(v.name.equals(var))
+                                return i;
                 }
                 
-                return false;
-        }
-
+                return -1;
+ }
 }
