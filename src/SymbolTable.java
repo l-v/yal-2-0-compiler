@@ -52,11 +52,11 @@ public class SymbolTable extends Object {
 	  public void addTree(Node root) {
 
 	    int childNum = root.jjtGetNumChildren();
-	    System.out.println("entrou");
+	    
 	    for (int i=0; i!=childNum; i++) {
 		
 			Node newNode = root.jjtGetChild(i);
-			System.out.println("--> "+newNode.toString() + ":" + newNode.getVal());
+			//System.out.println("--> "+newNode.toString() + ":" + newNode.getVal());
 	
 			String varName = newNode.getVal();
 			String varType = newNode.toString();
@@ -77,8 +77,10 @@ public class SymbolTable extends Object {
 	  public void addDeclNode(Node node) {
 		
 		Node DeclID = node.jjtGetChild(0);
-		System.out.println("--> "+DeclID.toString() + ":" + DeclID.getVal());
+		Boolean isArray = false;
+		//System.out.println("--> "+DeclID.toString() + ":" + DeclID.getVal());
 		
+  
 		for (int i=1; i!=node.jjtGetNumChildren(); i++) {
 		    
 		   if (node.jjtGetChild(i).toString().equals("ArraySize")) { 
@@ -87,6 +89,11 @@ public class SymbolTable extends Object {
 		      addVar(DeclID.getVal(), "int[]", arraySize.getVal());
 		      return;
 		   }
+
+		    else if (node.jjtGetChild(i).toString().equals("IsArray")) {
+		      addVar(DeclID.getVal(), "int[]");
+		      return;
+		    }
 		   
 		}
 		addVar(DeclID.getVal(), "int");
@@ -102,7 +109,7 @@ public class SymbolTable extends Object {
 
 		
 	     Node FuncID = node.jjtGetChild(0);
-	     System.out.println("--> "+FuncID.toString() + ":" + FuncID.getVal());
+	     //System.out.println("--> "+FuncID.toString() + ":" + FuncID.getVal());
 
 	     newTable.editTable(FuncID.getVal(), node.toString());
 	     
@@ -110,7 +117,7 @@ public class SymbolTable extends Object {
 
 	     // adiciona argumentos da funcao, se estes existirem
 	     if (node.jjtGetNumChildren()>2) {  
-		  System.out.println("function has children");
+		
 		  int index=1;
 		  for (int i=1; i!=node.jjtGetNumChildren(); i++) {
 
@@ -118,7 +125,7 @@ public class SymbolTable extends Object {
 
 		      // verifica por retorno da funcao
 		      if (childNode.toString().equals("AssignID")) {
-			  funcReturn = newTable.name; System.out.println("encontrou assign");
+			  funcReturn = newTable.name; 
 			  newTable.name = childNode.getVal();
 
 			  // verifica se retorno é array
@@ -127,7 +134,7 @@ public class SymbolTable extends Object {
 		      }
 
 		      // procura argumentos
-		      else if (childNode.toString().equals("Args"))  { System.out.println("encontrou args");
+		      else if (childNode.toString().equals("Args"))  { 
 			  index = i;
 			  break;
 		      }
@@ -213,7 +220,7 @@ public class SymbolTable extends Object {
 
 		// apenas para analise erros semanticos 
 		else if (stmtType.equals("CallID")) {
-		   System.out.println("found CALL");
+		   
 		    // verifica se funcao pertence a este modulo
 		    Boolean checkFunc = true;
 		    if (i+1 != numStmt) { 
@@ -244,21 +251,44 @@ public class SymbolTable extends Object {
 
 	  // Adiciona uma instrucao de Assign
 	  public void addAssign(Node node, SymbolTable table) {
-System.out.println("addAssign!");
+
 	     Node lhs = node.jjtGetChild(0);
 	     Node rhs = node.jjtGetChild(1);
 	     //System.out.println("==="+lhs.getVal());
 
-	     if (lhs.jjtGetNumChildren() !=0) {
+	      // verificar se variavel nao foi já declarada em niveis acima 
+	     Boolean alreadyDeclared = false;
+	     SymbolTable parent = parentTable;
 
-		//inserir tamanho array?
-		table.addVar(lhs.getVal(), "int[]");
+	     while (parent != null) {
+		  
+		 if (alreadyDeclared)
+		      break;
+
+		 int numVars = parent.localVars.size();
+		 for (int i=0; i!=numVars; i++) {
+		      if (lhs.getVal().equals(parent.localVars.get(i).name)) {
+			    alreadyDeclared = true;
+			    break;
+		      }
+
+		 }
+		 parent = parent.parentTable;
+
 	     }
 
-	     else {
-		table.addVar(lhs.getVal(), "int");
-	     }
+	      //adiciona variavel nao declarada à tabela
+	     if (!alreadyDeclared) {
+		if (lhs.jjtGetNumChildren() !=0) {
 
+		    //inserir tamanho array?
+		    table.addVar(lhs.getVal(), "int[]");
+		}
+	      
+		else {
+		    table.addVar(lhs.getVal(), "int");
+		}
+	    }
 
 	    // verificacao semantica 
 	    Integer numTerms = rhs.jjtGetNumChildren();
@@ -266,7 +296,7 @@ System.out.println("addAssign!");
 	  
 		Node term = rhs.jjtGetChild(i);
 		
-System.out.println("assign for!");
+
 		if (term.toString().equals("Term") && term.jjtGetChild(0).toString().equals("ID")) {
 
 		      //check if it is a function and not a variable, and if function belongs to this module
@@ -287,7 +317,6 @@ System.out.println("assign for!");
 		    
 		      
 		      if (isFunction && inModule) {
-			  System.out.println("isFunction && inModule");
 			  Node termChild = term.jjtGetChild(0);
 			  Node argsNode = null;
 
@@ -296,10 +325,9 @@ System.out.println("assign for!");
 		    
 
 			  // assign tem variaveis: ver possiveis erros
-			  System.out.println("VAMOS POR ERROS!");
 			  OnHoldError newError = new OnHoldError(termChild.getVal(), "assign", termChild.getLine(), argsNode, lhs.getVal());
 			  SAnalysis.errors.add(newError);
-System.out.println("ERROS -> " + SAnalysis.errors.size());
+
 
 		      }
 		}

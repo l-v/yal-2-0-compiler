@@ -1,0 +1,33 @@
+A FAZER:
+
+
+ESTRUTURA DA ÁRVORE
+
+MODULE
+	MID
+	FUNC
+	DEC
+
+DEC
+	ISARRAY -> já coloquei no .jjt e utilizei no CodeGenerator.java falta agora colocar na tabela de símbolos
+	ARRAYSIZE
+	ADDSUBOP
+	INICVAR
+
+ARRAYSIZE
+	SCALAR
+	INTEGER
+
+SCALAR
+	SCALARID
+	SCALARSIZE
+
+LHS
+	Id
+	size
+	INDEX
+
+INDEX
+	INDEXID
+	INTEGER
+	 
