@@ -17,7 +17,14 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
                 SAnalysisFunctions semantic = new SAnalysisFunctions(ST);
                 semantic.doAnalysis();
 
-                CodeGenerator cg = new CodeGenerator("file.txt",ST,root);
+                int numErrors = semantic.errorsFound.size();
+                if (numErrors != 0) {
+                    for (int i=0; i!=numErrors; i++) {
+                        System.out.println(semantic.errorsFound.get(i));
+                    }
+                } else {
+                  CodeGenerator cg = new CodeGenerator("file.txt",ST,root);
+                }
         }
 
   static final public SimpleNode parserBegin() throws ParseException {
@@ -1467,29 +1474,6 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     finally { jj_save(1, xla); }
   }
 
-  static private boolean jj_3R_8() {
-    if (jj_3R_11()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_6() {
-    if (jj_3R_9()) return true;
-    if (jj_scan_token(ASSIGN)) return true;
-    if (jj_3R_10()) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_21() {
-    if (jj_scan_token(STRING)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_12() {
-    if (jj_scan_token(31)) return true;
-    if (jj_3R_17()) return true;
-    return false;
-  }
-
   static private boolean jj_3R_23() {
     if (jj_scan_token(ID)) return true;
     return false;
@@ -1628,6 +1612,29 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
 
   static private boolean jj_3_1() {
     if (jj_3R_6()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_8() {
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_6() {
+    if (jj_3R_9()) return true;
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_3R_10()) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_21() {
+    if (jj_scan_token(STRING)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_12() {
+    if (jj_scan_token(31)) return true;
+    if (jj_3R_17()) return true;
     return false;
   }
 

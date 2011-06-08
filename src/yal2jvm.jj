@@ -35,7 +35,14 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants/*@egen*/{/*
 		SAnalysisFunctions semantic = new SAnalysisFunctions(ST);
 		semantic.doAnalysis();
 
-		CodeGenerator cg = new CodeGenerator("file.txt",ST,root);
+		int numErrors = semantic.errorsFound.size();
+		if (numErrors != 0) {
+		    for (int i=0; i!=numErrors; i++) {
+			System.out.println(semantic.errorsFound.get(i));
+		    }
+		} else {
+		  CodeGenerator cg = new CodeGenerator("file.txt",ST,root); 
+		}
 	}
   }
 
