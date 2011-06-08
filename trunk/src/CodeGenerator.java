@@ -247,7 +247,10 @@ public class CodeGenerator extends Object {
   {
 	  String result = "";
 	  
-	  //if()
+	  if(leftnode.jjtGetNumChildren() == 0) //size ou var
+	  {
+		  
+	  }
 	  
 	  return result;
   }
