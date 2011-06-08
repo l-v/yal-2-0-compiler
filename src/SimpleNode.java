@@ -9,8 +9,8 @@ class SimpleNode implements Node {
   protected Object value;
   protected yal2jvm parser;
 
-  public String val; // valor armazenado no nó
-  public int beginLine; // linha onde comeca o token do nó
+  public String val; // valor armazenado no no
+  public int beginLine; // linha onde comeca o token do no
 
   public SimpleNode(int i) {
     id = i;
@@ -75,6 +75,10 @@ class SimpleNode implements Node {
 
   public void dump(String prefix) {
     System.out.println(toString(prefix));
+    
+    if(children == null)
+    	System.out.println("\t[ "+this.val+" ]");
+    
     if (children != null) {
       for (int i = 0; i < children.length; ++i) {
         SimpleNode n = (SimpleNode)children[i];
