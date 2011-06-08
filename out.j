@@ -20,7 +20,7 @@
 .method public static
 print_array([III)[I
 .limit stack 0
-.limit locals 6
+.limit locals 9
 
 .end method
 
