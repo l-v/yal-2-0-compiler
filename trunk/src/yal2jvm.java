@@ -23,7 +23,7 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
                         System.out.println(semantic.errorsFound.get(i));
                     }
                 } else {
-                  CodeGenerator cg = new CodeGenerator("file.txt",ST,root);
+                  CodeGenerator cg = new CodeGenerator("file.j",ST,root);
                 }
         }
 
@@ -1028,7 +1028,7 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
         try {
                                                         jjtree.closeNodeScope(jjtn006, true);
                                                         jjtc006 = false;
-                                                       jjtn006.val = "IsFunc"; System.out.println("somethign");
+                                                       jjtn006.val = "IsFunc";
         } finally {
                                                         if (jjtc006) {
                                                           jjtree.closeNodeScope(jjtn006, true);

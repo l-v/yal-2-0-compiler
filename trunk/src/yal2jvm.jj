@@ -41,8 +41,8 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants/*@egen*/{/*
 			System.out.println(semantic.errorsFound.get(i));
 		    }
 		} else {
-		  CodeGenerator cg = new CodeGenerator("file.txt",ST,root); 
-		}
+		  CodeGenerator cg = new CodeGenerator("file.j",ST,root); 
+		} 
 	}
   }
 
@@ -1043,7 +1043,7 @@ void Term()      : {Token tInt; Token t0; Token t1; Token tSize; Token tOp;}
                                                         jjtree.closeNodeScope(jjtn006, true);
                                                         jjtc006 = false;
                                                       }
-/*@egen*/ {jjtn006.val = "IsFunc"; System.out.println("somethign");}/*@bgen(jjtree)*/
+/*@egen*/ {jjtn006.val = "IsFunc"; }/*@bgen(jjtree)*/
                                                       } finally {
                                                         if (jjtc006) {
                                                           jjtree.closeNodeScope(jjtn006, true);
