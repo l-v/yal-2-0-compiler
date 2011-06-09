@@ -235,6 +235,11 @@ public class CodeGenerator extends Object {
           
           limitLocals += (localVariables.size());
           
+          if(funcName.equals("main"))
+        	  limitLocals += (localVariables.size() + 1);  
+          else
+        	  limitLocals += (localVariables.size()); 
+          
           body += translateStmtLst(bodyNode.jjtGetChild(0), localVariables);
             
           result += limitStack + numStack + "\n";
