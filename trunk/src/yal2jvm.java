@@ -737,39 +737,48 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
         case BITWISE_OP:
           switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
           case ARITH_OP:
-                    SimpleNode jjtn002 = new SimpleNode(JJTARITMOP);
-                    boolean jjtc002 = true;
-                    jjtree.openNodeScope(jjtn002);
+            tOp = jj_consume_token(ARITH_OP);
+                                   SimpleNode jjtn002 = new SimpleNode(JJTARITMOP);
+                                   boolean jjtc002 = true;
+                                   jjtree.openNodeScope(jjtn002);
             try {
-              tOp = jj_consume_token(ARITH_OP);
+                                   jjtree.closeNodeScope(jjtn002, true);
+                                   jjtc002 = false;
+                                  jjtn002.val=tOp.image;
             } finally {
-                    if (jjtc002) {
-                      jjtree.closeNodeScope(jjtn002, true);
-                    }
+                                   if (jjtc002) {
+                                     jjtree.closeNodeScope(jjtn002, true);
+                                   }
             }
             break;
           case BITWISE_OP:
-                                              SimpleNode jjtn003 = new SimpleNode(JJTBITOP);
-                                              boolean jjtc003 = true;
-                                              jjtree.openNodeScope(jjtn003);
+            tOp = jj_consume_token(BITWISE_OP);
+                                     SimpleNode jjtn003 = new SimpleNode(JJTBITOP);
+                                     boolean jjtc003 = true;
+                                     jjtree.openNodeScope(jjtn003);
             try {
-              tOp = jj_consume_token(BITWISE_OP);
+                                     jjtree.closeNodeScope(jjtn003, true);
+                                     jjtc003 = false;
+                                    jjtn003.val=tOp.image;
             } finally {
-                                              if (jjtc003) {
-                                                jjtree.closeNodeScope(jjtn003, true);
-                                              }
+                                     if (jjtc003) {
+                                       jjtree.closeNodeScope(jjtn003, true);
+                                     }
             }
             break;
           case ADDSUB_OP:
-                                                                        SimpleNode jjtn004 = new SimpleNode(JJTADDSUBOP);
-                                                                        boolean jjtc004 = true;
-                                                                        jjtree.openNodeScope(jjtn004);
+            tOp = jj_consume_token(ADDSUB_OP);
+                                    SimpleNode jjtn004 = new SimpleNode(JJTADDSUBOP);
+                                    boolean jjtc004 = true;
+                                    jjtree.openNodeScope(jjtn004);
             try {
-              tOp = jj_consume_token(ADDSUB_OP);
+                                    jjtree.closeNodeScope(jjtn004, true);
+                                    jjtc004 = false;
+                                   jjtn004.val=tOp.image;
             } finally {
-                                                                        if (jjtc004) {
-                                                                          jjtree.closeNodeScope(jjtn004, true);
-                                                                        }
+                                    if (jjtc004) {
+                                      jjtree.closeNodeScope(jjtn004, true);
+                                    }
             }
             break;
           default:
@@ -777,30 +786,29 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
             jj_consume_token(-1);
             throw new ParseException();
           }
-                                                                                                  jjtn000.val=tOp.image;
-                                                                                                                            SimpleNode jjtn005 = new SimpleNode(JJTTERM);
-                                                                                                                            boolean jjtc005 = true;
-                                                                                                                            jjtree.openNodeScope(jjtn005);
+                                                                        SimpleNode jjtn005 = new SimpleNode(JJTTERM);
+                                                                        boolean jjtc005 = true;
+                                                                        jjtree.openNodeScope(jjtn005);
           try {
             Term();
           } catch (Throwable jjte005) {
-                                                                                                                            if (jjtc005) {
-                                                                                                                              jjtree.clearNodeScope(jjtn005);
-                                                                                                                              jjtc005 = false;
-                                                                                                                            } else {
-                                                                                                                              jjtree.popNode();
-                                                                                                                            }
-                                                                                                                            if (jjte005 instanceof RuntimeException) {
-                                                                                                                              {if (true) throw (RuntimeException)jjte005;}
-                                                                                                                            }
-                                                                                                                            if (jjte005 instanceof ParseException) {
-                                                                                                                              {if (true) throw (ParseException)jjte005;}
-                                                                                                                            }
-                                                                                                                            {if (true) throw (Error)jjte005;}
+                                                                        if (jjtc005) {
+                                                                          jjtree.clearNodeScope(jjtn005);
+                                                                          jjtc005 = false;
+                                                                        } else {
+                                                                          jjtree.popNode();
+                                                                        }
+                                                                        if (jjte005 instanceof RuntimeException) {
+                                                                          {if (true) throw (RuntimeException)jjte005;}
+                                                                        }
+                                                                        if (jjte005 instanceof ParseException) {
+                                                                          {if (true) throw (ParseException)jjte005;}
+                                                                        }
+                                                                        {if (true) throw (Error)jjte005;}
           } finally {
-                                                                                                                            if (jjtc005) {
-                                                                                                                              jjtree.closeNodeScope(jjtn005, true);
-                                                                                                                            }
+                                                                        if (jjtc005) {
+                                                                          jjtree.closeNodeScope(jjtn005, true);
+                                                                        }
           }
           break;
         default:
@@ -1561,9 +1569,19 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     return false;
   }
 
+  static private boolean jj_3R_15() {
+    if (jj_scan_token(31)) return true;
+    return false;
+  }
+
   static private boolean jj_3R_18() {
     if (jj_scan_token(33)) return true;
     if (jj_scan_token(SIZE)) return true;
+    return false;
+  }
+
+  static private boolean jj_3R_11() {
+    if (jj_3R_16()) return true;
     return false;
   }
 
@@ -1571,16 +1589,6 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_18()) jj_scanpos = xsp;
-    return false;
-  }
-
-  static private boolean jj_3R_15() {
-    if (jj_scan_token(31)) return true;
-    return false;
-  }
-
-  static private boolean jj_3R_11() {
-    if (jj_3R_16()) return true;
     return false;
   }
 
@@ -1610,13 +1618,13 @@ public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants, yal2jvmCon
     return false;
   }
 
-  static private boolean jj_3_1() {
-    if (jj_3R_6()) return true;
+  static private boolean jj_3R_8() {
+    if (jj_3R_11()) return true;
     return false;
   }
 
-  static private boolean jj_3R_8() {
-    if (jj_3R_11()) return true;
+  static private boolean jj_3_1() {
+    if (jj_3R_6()) return true;
     return false;
   }
 

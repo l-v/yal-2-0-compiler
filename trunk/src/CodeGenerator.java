@@ -52,6 +52,7 @@ public class CodeGenerator extends Object {
   public String declareGlobal(Node declNode)
   {
           String result = "";
+          Boolean isArray = false;
           
           int childNum = declNode.jjtGetNumChildren();
           
@@ -83,7 +84,13 @@ public class CodeGenerator extends Object {
                   }
                   else if(newNode.toString().equals("ArraySize") ||
                                   newNode.toString().equals("IsArray"))
-                          result += "[I\n";               
+                  {
+                	  if(!isArray)
+                	  {
+                		  result += "[I\n";
+                		  isArray = true;
+                	  }
+                  }
           }
           
           return result;
@@ -230,7 +237,10 @@ public class CodeGenerator extends Object {
                       Node right = newNode.jjtGetChild(1);
                           
                       result += translateLeftElement(left, localVariables);
-                      result += translateRightElement(left.getVal(), right.jjtGetChild(0), localVariables);
+                      result += translateRightElement(right, localVariables);
+                      
+                      int type = isArray(left, localVariables);
+                      result += storeVars(left.getVal(), type, localVariables);
                   }
                   else if(newNode.toString().equals("While"))
                 	  result += translateWhile(newNode, localVariables);
@@ -285,30 +295,38 @@ public class CodeGenerator extends Object {
           return result;
   }
 
-  public String translateRightElement(String varleft, Node rightnode, LinkedList<Variable> localVariables)
+  public String translateRightElement(Node right, LinkedList<Variable> localVariables)
   {
 	  String result = "";
 	  
-	  if(rightnode.toString().equals("ArrSize"))
+	  Node firstnode = right.jjtGetChild(0);
+	  
+	  if(firstnode.toString().equals("ArrSize"))
 	  {
-		Node newnode = rightnode.jjtGetChild(0);
+		Node newnode = firstnode.jjtGetChild(0);
 		
 		if(newnode.toString().equals("INTEGER"))
-		{
 			result += loadInteger(newnode.getVal());
-		}
 		else if(newnode.toString().equals("Scalar"))
 			result += translateScalarAccess(newnode, localVariables);
 		
 		result += "newarray int\n";
-		result += storeVars(varleft, true, localVariables);
 	  }
 	  else
 	  {
-		  if(rightnode.toString().equals("Term"))
-			  result += translateTerm(rightnode, localVariables);
+		  if(firstnode.toString().equals("Term"))
+			  result += translateTerm(firstnode, localVariables);
 		  
-		 // if(newnode.)
+		  if(right.jjtGetNumChildren() > 1)
+		  {
+			  
+			  String Op = right.jjtGetChild(1).getVal();
+			  
+			  result += translateTerm(right.jjtGetChild(2), localVariables);
+			  
+			  result +=translateOperation(Op);
+				  
+		  }
 	  }
 	  
 	  return result;
@@ -589,6 +607,34 @@ end_if_tag
 	  return result;
   }
   
+  public String translateOperation(String Op)
+  {
+	  String result = "";
+	  
+	  if(Op.equals("+"))
+		  result = "iadd\n";
+	  else if(Op.equals("-"))
+		  result = "isub\n";
+	  else if(Op.equals("*"))
+		  result = "imul\n";
+	  else if(Op.equals("/"))
+		  result = "idiv\n";
+	  else if(Op.equals("&"))
+		  result = "iand\n";
+	  else if(Op.equals("|"))
+		  result = "ior\n";
+	  else if(Op.equals("^"))
+		  result = "ixor\n";
+	  else if(Op.equals(">>"))
+		  result = "ishr\n";
+	  else if(Op.equals("<<"))
+		  result = "ishl\n";
+	  else if(Op.equals(">>>"))
+		  result = "iushr\n";
+	  
+	  return result;
+  }
+  
   public String loadInteger(String integer)
   {
 	  String result = "";
@@ -597,7 +643,7 @@ end_if_tag
 	  if(i >= 0 && i <= 5)
 		  result += "iconst_" + i + "\n";
 	  else
-		  result += "bipush" + i + "\n";
+		  result += "bipush " + i + "\n";
 	  
 	  return result;
   }
@@ -634,15 +680,22 @@ end_if_tag
       return result;
   }
   
-  public String storeVars(String var, boolean isArray, LinkedList<Variable> localVariables)
+  //type 1 - integer; 2 - array; 3 - arrayacess
+  public String storeVars(String var, int type, LinkedList<Variable> localVariables)
   {
 	  String result = "";
+	  
+	  if(type == 3)
+	  {
+		  result = "iastore\n";
+		  return result;
+	  }
 	  
 	  if(listContainsVar(var, globalVars) != -1) //array global
       {
     	  result += "putstatic fields/" + var;
     	  
-    	  if(isArray)
+    	  if(type == 2)
     		  result += " [I\n";
     	  else
     		  result += " I\n";
@@ -653,7 +706,7 @@ end_if_tag
     	  
     	  if(indice != -1)
     	  {
-    		  if(isArray)
+    		  if(type == 2)
     			  result += "astore_";
     		  else
     			  result+= "istore_";
@@ -695,4 +748,39 @@ end_if_tag
                 
                 return -1;
  }
+ 
+  public Variable getVariable(String var, LinkedList<Variable> list)
+  {
+	  int localindex = listContainsVar(var, list);
+	  
+	  if(localindex != -1)
+		  return list.get(localindex);
+	  
+	  int globalindex = listContainsVar(var, globalVars);
+	  return globalVars.get(globalindex);
+
+  }
+
+  public int isArray(Node leftnode, LinkedList<Variable> list)
+  {
+      String varname = leftnode.getVal();
+      
+      if(leftnode.jjtGetNumChildren() != 0) //index
+      {      	  
+    	 return 3; //arrayaccess
+      }
+      else //var integer
+      {
+    	  Variable var = getVariable(varname, list);
+    	  
+    	  if(var.type.equals("int"))
+    		  return 1; //integer
+    	  
+    	  if(var.type.equals("int[]"))
+    		  return 2; //array
+      }
+      
+      return -1;
+  }
+  
 }
