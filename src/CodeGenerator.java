@@ -147,7 +147,7 @@ public class CodeGenerator extends Object {
           String body = "";
           String footer = ".end method";
           
-          numStack = 0;
+          numStack = 20;
           
           int childNum = funcNode.jjtGetNumChildren();
           
@@ -301,6 +301,9 @@ public class CodeGenerator extends Object {
                       rightContent += translateRightElement(right, localVariables);
                       
                       int typeleft = isArray(left, localVariables);
+		      if (right.jjtGetChild(0).toString().equals("ArrSize"))
+			  typeleft = 2;
+
                       String typeright = getRightElementType(right, localVariables);
                       
                       if(typeleft == 2 && typeright.equals("int")) //array = int
@@ -338,7 +341,7 @@ public class CodeGenerator extends Object {
 								args = temp;
 							
                 	  }
-                	  else if (i + 2 != numOfStmtLst)
+                	  if (i + 2 != numOfStmtLst)
                 	  {
                 		  Node temp = stmtNode.jjtGetChild(i + 2);
 
@@ -346,7 +349,7 @@ public class CodeGenerator extends Object {
                 			  args = temp;
 					
                 	  }
-
+			  
                 	  result += translateCall(newNode, call2, args, localVariables);
 
                   }
@@ -556,7 +559,7 @@ public class CodeGenerator extends Object {
 			   size = true;
 	  }
 	  
-	  if(isFunc) //call
+	  if(isFunc) //call listContainsVar(String var, LinkedList<Variable> list )
 	  {
 		  SimpleNode s1 = new SimpleNode(0);
 		  s1.val = id;
@@ -567,7 +570,7 @@ public class CodeGenerator extends Object {
 		  result += translateCall(s1, s2, argList, localVariables);
 	  }
 	  else if(!id.equals("")) //array e scalar access
-	  { 
+	  { 	//if (listContainsVar(id, localVariables) != 1) {
 		  if(isArray(id,localVariables))
 			  result += loadVars(id, true, localVariables);
 		  else
@@ -732,7 +735,7 @@ end_if_tag
 
    public String translateCall(Node callNode1, Node callNode2, Node argList, LinkedList<Variable> localVariables) {
       
-	String result = "\n;Call";
+	String result = "\n;Call\n";
 
 	String moduleName;
 	String functionName;
@@ -754,30 +757,20 @@ end_if_tag
 	SymbolTable calledFunc = st.getSymbolTable("Func", functionName);
 	//System.out.println("call: " + callNode1.getVal() + ":" + callNode2.getVal());
 	
-
-	/*
-	int numFuncArgs = calledFunc.funcArgs.size();
-	for (int i=0; i!=numFuncArgs; i++) {
-	    Variable funcArg = calledFunc.funcArgs.get(i);
-
-	    if (funcArg.type.equals("int")) {
-		args += "I";
-	    } else {
-		args += "[I";
-	    }
-
+	if (moduleName.equalsIgnoreCase("io") && functionName.equalsIgnoreCase("println")) {
+	    result += "\ngetstatic java/lang/System.out Ljava/io/PrintStream;";
 	}
-*/
 
 	 // invocar os argumentos - utiliza tabela para distinguir entre variaveis int e int[]
 	String args = "(";
 
 	if (argList != null) {
 	    int numArgs = argList.jjtGetNumChildren(); 
-
+	System.out.println("|||!" + argList.toString() + "," + argList.jjtGetNumChildren());
 	    for (int i=0; i!=numArgs; i++) {
 		Node arg = argList.jjtGetChild(i);
-
+		System.out.println("toString: " + arg.toString() + "," + arg.getVal());
+		System.out.println("child: " + arg.jjtGetChild(0).toString() + "," + arg.jjtGetChild(0).getVal());
 		// treat argument (fazer load??)
 		if (arg.jjtGetChild(0).toString().equals("ArgID")) {
 
@@ -799,20 +792,25 @@ end_if_tag
 
 		else if (arg.jjtGetChild(0).toString().equals("STRING")) {
 		    args += "Ljava/lang/String;";
-		    result += "\nldc \"" + arg.jjtGetChild(0) + "\"";
+		    result += "\nldc " + arg.getVal() + "";
 		}
 
 		else if (arg.jjtGetChild(0).toString().equals("INTEGER")) {
-		    //args = "I"; System.out.println("arg:" + arg.jjtGetChild(0).getVal() + "--" + arg.toString() + "," + arg.getVal());
+		    args += "I"; //System.out.println("arg:" + arg.jjtGetChild(0).getVal() + "--" + arg.toString() + "," + arg.getVal());
 		    result += loadInteger(arg.getVal()); // verificar se está correcto e nao é preciso loads
 		}
 	      
 	    }
+	} else System.out.println("arglist is null :o");
+
+System.out.println("---args: " + args);
+	if (moduleName.equalsIgnoreCase("io") && functionName.equalsIgnoreCase("println")) {
+	    result += "\ninvokevirtual java/io/PrintStream.println";
 	}
-
-
-	result += "\ninvokestatic " + moduleName + "/" + functionName;
-	result += args + ")V";
+	else {
+	    result += "\ninvokestatic " + moduleName + "/" + functionName;
+	}
+	result += args + ")V\n";
 	return result;
   }
    
@@ -911,7 +909,7 @@ end_if_tag
 	  
       if(listContainsVar(var, globalVars) != -1) //array global
       {
-    	  result += "getstatic fields/" + var;
+    	  result += "getstatic " + st.name + "/" + var;
     	  
     	  if(isArray)
     		  result += " [I\n";
@@ -953,7 +951,7 @@ end_if_tag
 	  
 	  if(listContainsVar(var, globalVars) != -1) //array global
       {
-    	  result += "putstatic fields/" + var;
+    	  result += "putstatic " + st.name + "/" + var;
     	  
     	  if(type == 2)
     		  result += " [I\n";
@@ -1047,7 +1045,11 @@ end_if_tag
   }
   
   public boolean isArray(String varname, LinkedList<Variable> list)
-  {
+  {System.out.println("varing: " + varname + "  list: " + list.size()); 
+for (int i=0; i!=list.size(); i++) {
+System.out.println("+" + list.get(i).name);
+}
+
 	  Variable var = getVariable(varname, list);
   
 	  if(var.type.equals("int"))
