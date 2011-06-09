@@ -108,7 +108,7 @@ public class CodeGenerator extends Object {
                           result += " .limit stack 2\n";
                           result += " .limit locals 0\n";
                           
-                          result += " bipush " + size + "\n";
+                          result += " " + loadInteger(size);
                           result += " newarray int\n";
                           result += " putstatic " + st.name + "/" + name  + " [I\n";
 
@@ -229,7 +229,8 @@ public class CodeGenerator extends Object {
                       Node left = newNode.jjtGetChild(0);
                       Node right = newNode.jjtGetChild(1);
                           
-                      result += translateLeftElement(left, localVariables) + "\n";     
+                      result += translateLeftElement(left, localVariables);
+                      result += translateRightElement(left.getVal(), right.jjtGetChild(0), localVariables);
                   }
                   else if(newNode.toString().equals("While"))
                 	  result += translateWhile(newNode, localVariables);
@@ -276,16 +277,7 @@ public class CodeGenerator extends Object {
           if(leftnode.jjtGetNumChildren() != 0) //index
           {      	  
         	  result += loadVars(var, true, localVariables);
-        	  
-              Node index = leftnode.jjtGetChild(0).jjtGetChild(0);
-                  
-              if(index.toString().equals("INTEGER"))
-            	  result += "bipush " + index.getVal() + "\n";
-              else if(index.toString().equals("IndexID"))
-              {
-            	  String indexid = index.getVal();
-            	  result += loadVars(indexid, false, localVariables);
-              }
+        	  result += translateIndex(leftnode.jjtGetChild(0), localVariables);
           }
           else //var integer
         	  result += loadVars(var, false, localVariables);
@@ -293,9 +285,31 @@ public class CodeGenerator extends Object {
           return result;
   }
 
-  public String translateRightElement(Node rightnode, LinkedList<Variable> localVariables)
+  public String translateRightElement(String varleft, Node rightnode, LinkedList<Variable> localVariables)
   {
 	  String result = "";
+	  
+	  if(rightnode.toString().equals("ArrSize"))
+	  {
+		Node newnode = rightnode.jjtGetChild(0);
+		
+		if(newnode.toString().equals("INTEGER"))
+		{
+			result += loadInteger(newnode.getVal());
+		}
+		else if(newnode.toString().equals("Scalar"))
+			result += translateScalarAccess(newnode, localVariables);
+		
+		result += "newarray int\n";
+		result += storeVars(varleft, true, localVariables);
+	  }
+	  else
+	  {
+		  if(rightnode.toString().equals("Term"))
+			  result += translateTerm(rightnode, localVariables);
+		  
+		 // if(newnode.)
+	  }
 	  
 	  return result;
   }
@@ -358,6 +372,28 @@ public class CodeGenerator extends Object {
       return result;
   }
 
+  public String translateTerm(Node termNode, LinkedList<Variable> localVariables)
+  {
+	  String result = "";
+	  
+	  int childsNum = termNode.jjtGetNumChildren();
+	  
+	  for(int i = 0; i < childsNum; i++)
+	  {
+		  Node newnode = termNode.jjtGetChild(i);
+		  
+		   if (newnode.toString().equals("INTEGER"))
+			  result += loadInteger(newnode.getVal());
+		   else if(newnode.toString().equals("AddSubOP"))
+		   {
+			   //if(newnode.getVal().equals("-"))
+				   //TODO
+		   }
+	  }
+	  
+	  return result;
+  }
+  
   public String translateWhile(Node whileNode, LinkedList<Variable> localVariables) {
 
 	  String result = "\n;WHILE";
@@ -446,6 +482,59 @@ public class CodeGenerator extends Object {
 	return result;
   }
 
+  public String translateScalarAccess(Node scalaraccess, LinkedList<Variable> localVariables)
+  {
+	  
+	  String result = "";
+	  
+	  String var = scalaraccess.jjtGetChild(0).getVal();
+	  
+	  result += loadVars(var, true, localVariables);
+	  
+	  if(scalaraccess.jjtGetNumChildren() > 1)
+		  result += "arraylenght\n";
+	  
+	  return result;
+  }
+  
+  public String translateArrayAccess(Node arrayaccess, LinkedList<Variable> localVariables)
+  {
+	  String result = "";
+	  result += loadVars(arrayaccess.jjtGetChild(0).getVal(),true,localVariables);
+	  result += translateIndex(arrayaccess.jjtGetChild(1), localVariables);
+	  
+	  return result;
+  }
+  
+  public String translateIndex(Node index, LinkedList<Variable> localVariables)
+  {
+	  String result = "";
+	  
+	  Node newnode = index.jjtGetChild(0);
+	  
+	  if(newnode.toString().equals("INTEGER"))
+	  {
+		  result += loadInteger(newnode.getVal());
+	  }
+	  else if(newnode.toString().equals("IndexID"))
+		  result+=loadVars(newnode.getVal(),false,localVariables);
+	  
+	  return result;
+  }
+  
+  public String loadInteger(String integer)
+  {
+	  String result = "";
+	  Integer i = Integer.decode(integer);
+	  
+	  if(i >= 0 && i <= 5)
+		  result += "iconst_" + i + "\n";
+	  else
+		  result += "bipush" + i + "\n";
+	  
+	  return result;
+  }
+  
   public String loadVars(String var, boolean isArray, LinkedList<Variable> localVariables)
   {
 	  String result = "";
@@ -469,6 +558,38 @@ public class CodeGenerator extends Object {
     			  result += "aload_";
     		  else
     			  result+= "iload_";
+    		  
+    		  result += indice + "\n";
+    	  }
+    		  
+      }
+      
+      return result;
+  }
+  
+  public String storeVars(String var, boolean isArray, LinkedList<Variable> localVariables)
+  {
+	  String result = "";
+	  
+	  if(listContainsVar(var, globalVars) != -1) //array global
+      {
+    	  result += "putstatic fields/" + var;
+    	  
+    	  if(isArray)
+    		  result += " [I\n";
+    	  else
+    		  result += " I\n";
+      }
+      else //array local
+      {
+    	  int indice = listContainsVar(var,localVariables);
+    	  
+    	  if(indice != -1)
+    	  {
+    		  if(isArray)
+    			  result += "astore_";
+    		  else
+    			  result+= "istore_";
     		  
     		  result += indice + "\n";
     	  }
