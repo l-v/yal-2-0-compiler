@@ -194,6 +194,7 @@ public class SymbolTable extends Object {
 		      addFuncBody(whileNode, newTable);
 		
 		      mainTable.addTable(newTable);
+		      mainTable.localVars.addAll(newTable.localVars);
 		  }
 
 		  else if (stmtType.equals("If")) {
@@ -214,6 +215,7 @@ public class SymbolTable extends Object {
 			  addFuncBody(ifNode, newTable);
 
 			  mainTable.addTable(newTable);
+			  mainTable.localVars.addAll(newTable.localVars);
 			}
 		      }		      
 		  }
