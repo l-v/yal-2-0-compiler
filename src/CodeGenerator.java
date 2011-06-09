@@ -481,7 +481,13 @@ public class CodeGenerator extends Object {
 	  
 	  if(isFunc) //call
 	  {
+		  SimpleNode s1 = new SimpleNode(0);
+		  s1.val = id;
 		  
+		  SimpleNode s2 = new SimpleNode(1);
+		  s2.val = id2;
+		  
+		  result += translateCall(s1, s2, argList, localVariables);
 	  }
 	  else //array e scalar access
 	  {
@@ -672,7 +678,7 @@ end_if_tag
 	result += args + ")V";
 	return result;
   }
-
+   
   public String translateScalarAccess(Node scalaraccess, LinkedList<Variable> localVariables)
   {
 	  
