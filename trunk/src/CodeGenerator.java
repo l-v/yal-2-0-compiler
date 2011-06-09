@@ -185,7 +185,7 @@ public class CodeGenerator extends Object {
           
 	// currentTable = st.getSymbolTable("Func",  name);
 
-          result += header + "\n";
+          result += header + " ";
           result += name;
           result += "(" + args + ")";
           result += rettype + "\n";
@@ -521,7 +521,7 @@ public class CodeGenerator extends Object {
 		  else if(index != null)
 			  {
 			  	result += translateIndex(index,localVariables);
-			  	result +="iaload";
+			  	result +="iaload\n";
 			  }
 	  }
 	  
@@ -533,7 +533,7 @@ public class CodeGenerator extends Object {
   public String translateWhile(Node whileNode, LinkedList<Variable> localVariables) {
 
 	  String result = "\n;WHILE";
-	  result += "\nloop:";
+	  result += "\nloop:\n";
 
 
 	  int numChildren = whileNode.jjtGetNumChildren();
@@ -544,7 +544,7 @@ public class CodeGenerator extends Object {
 	      //load comparison variables
 	      if (whileChild.toString().equals("ExprTest")) {
 		  result += exprTest(whileChild, localVariables);
-		  result += " loop_end";
+		  result += " loop_end\n";
 	      }
 
 	      // execute statement
@@ -555,7 +555,7 @@ public class CodeGenerator extends Object {
 	  }
 
 	  result += "\ngoto loop";
-	  result += "\nloop_end:";
+	  result += "\nloop_end:\n";
 
 	  return result;
   }  
@@ -582,7 +582,7 @@ public class CodeGenerator extends Object {
 	      else if (ifChild.toString().equals("Stmtlst")) {
 
 		  if (elseStatement) {
-		      result += "\nelse_tag:";
+		      result += "\nelse_tag:\n";
 		  }
 		
 
@@ -594,7 +594,7 @@ public class CodeGenerator extends Object {
 		      result += "\ngoto endif_tag";
 		      elseStatement = true;
 		  } else { //fim do else
-		      result += "\nendif_tag: ";
+		      result += "\nendif_tag: \n";
 		  }
 	      }
 
