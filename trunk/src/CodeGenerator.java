@@ -45,11 +45,11 @@ public class CodeGenerator extends Object {
                         }
               
                         else if (varType.equals("Func")) {
-                            currentTable = st.childTables.get(tableChild);
+                           // currentTable = st.childTables.get(tableChild);
 			    functions += declareFunction(newNode);
 
 			    currentTable = st;
-			    tableChild++;
+			    //tableChild++;
 			}
           }
 
@@ -173,7 +173,7 @@ public class CodeGenerator extends Object {
           if(name.equals("main"))
                   args = "[Ljava/lang/String;";
           
-	 currentTable = st.getSymbolTable("Func",  name);
+	// currentTable = st.getSymbolTable("Func",  name);
 
           result += header + "\n";
           result += name;
@@ -236,7 +236,7 @@ public class CodeGenerator extends Object {
   {
           String result = "";
 
-	  SymbolTable funcTable = currentTable;
+	  //SymbolTable funcTable = currentTable;
 	  int funcChild = 0; // regista indice das tabelas 'filho' percorridas
          
           
@@ -259,25 +259,9 @@ public class CodeGenerator extends Object {
                   }
                   else if(newNode.toString().equals("While")) {
 
-                	  if (funcChild >= funcTable.childTables.size())
-			      System.out.println("\nErro ao retirar while da tabela: " + funcChild + "--" + funcTable.childTables.size());
-
-
-			  //currentTable updated com tabela while
-			  currentTable = funcTable.childTables.get(funcChild);
-
-
-			  //adiciona as variaveis locais do while 
-			  LinkedList<Variable> whileLocalVars = localVariables;
-			  whileLocalVars.addAll(currentTable.localVars); 
-			  
-
-
-                	  result += translateWhile(newNode, whileLocalVars);
+                	  result += translateWhile(newNode, localVariables);
 			  funcChild++;
 			  
-			  // faz 'retrocesso' na tabela a ser analisada
-			  currentTable = funcTable;
 		  }
 		  else if(newNode.toString().equals("If")) {
                 
@@ -541,7 +525,6 @@ public class CodeGenerator extends Object {
   public String translateIf(Node ifNode, LinkedList<Variable> localVariables) {
 	  String result = "\n;IF";
 	  
-	  SymbolTable ifTable = currentTable;
 	  int ifTIndex = 0;
 
 	  int numChildren = ifNode.jjtGetNumChildren();
@@ -565,19 +548,9 @@ public class CodeGenerator extends Object {
 		  }
 		
 
-		  //currentTable updated com tabela if
-		  currentTable = ifTable.childTables.get(ifTIndex);
-
-
-		  //adiciona as variaveis locais do if/else 
-		  LinkedList<Variable> ifLocalVars = localVariables;
-		  ifLocalVars.addAll(currentTable.localVars); 
-
 		  result += translateStmtLst(ifChild, localVariables);
 		  ifTIndex++;
 			  
-		  // faz 'retrocesso' na tabela a ser analisada
-		 currentTable = ifTable;
 
 		  if (!elseStatement) { //fim do if
 		      result += "\ngoto endif_tag";
@@ -609,6 +582,7 @@ end_if_tag
 
 	String moduleName;
 	String functionName;
+	Boolean inModule = true;
 
 	if (callNode2 == null) {
 	    functionName = callNode1.getVal();
@@ -618,11 +592,13 @@ end_if_tag
 	else {
 	    functionName = callNode2.getVal();
 	    moduleName = callNode1.getVal();
+	    inModule = false;
 	}
 
 
 	// load arguments
 	SymbolTable calledFunc = st.getSymbolTable("Func", functionName);
+	//System.out.println("call: " + callNode1.getVal() + ":" + callNode2.getVal());
 	
 
 	/*
@@ -651,8 +627,14 @@ end_if_tag
 		// treat argument (fazer load??)
 		if (arg.jjtGetChild(0).toString().equals("ArgID")) {
 
-		    Boolean isArray = false;
+		    Boolean isArray = false; /*
 		    if (calledFunc.funcArgs.get(i).type.contains("[]")) {
+			isArray = true;
+			args += "[";
+		    }*/Variable var = getVariable(arg.getVal(), localVariables);
+		    if (var == null) System.out.println("Erro em translateCall");
+		    
+		    if (var.type.contains("[]")) {
 			isArray = true;
 			args += "[";
 		    }
@@ -667,8 +649,8 @@ end_if_tag
 		}
 
 		else if (arg.jjtGetChild(0).toString().equals("INTEGER")) {
-		    args = "I";
-		    result += loadInteger(arg.jjtGetChild(0).getVal()); // verificar se está correcto e nao é preciso loads
+		    args = "I"; System.out.println("arg:" + arg.jjtGetChild(0).getVal() + "--" + arg.toString() + "," + arg.getVal());
+		    result += loadInteger(arg.getVal()); // verificar se está correcto e nao é preciso loads
 		}
 	      
 	    }
