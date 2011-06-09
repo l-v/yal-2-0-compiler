@@ -199,7 +199,9 @@ void Lhs() : {Token t0; Token tSize;}
 
 void Rhs() : {Token tOp;}
 {
- (Term() #Term [( tOp=<ARITH_OP> #AritmOP | tOp=<BITWISE_OP> #BitOP | tOp=<ADDSUB_OP> #AddSubOP) {jjtThis.val=tOp.image;} Term() #Term ] )
+ (Term() #Term [( tOp=<ARITH_OP> {jjtThis.val=tOp.image;} #AritmOP |
+                  tOp=<BITWISE_OP> {jjtThis.val=tOp.image;} #BitOP |
+                  tOp=<ADDSUB_OP> {jjtThis.val=tOp.image;} #AddSubOP) Term() #Term ] )
  | "[" ArraySize() #ArrSize "]"
 }
 
