@@ -209,6 +209,9 @@ public class SymbolTable extends Object {
 			  if (j==numStmtLst-1) {
 			     ifType="Else";
 			  }
+			  else {
+			    ifType = "If";
+			  }
 
 			  SymbolTable newTable = new SymbolTable(ifType, mainTable);
 			  addFuncBody(ifNode, newTable);
@@ -440,14 +443,14 @@ public class SymbolTable extends Object {
 	  //Percorre as tabelas de simbolos e retorna a tabela com o nome e tipo indicados
 	  SymbolTable getSymbolTable(String stype, String sname)
 	  {  
-		  if(type.equals(stype) && name.equals(sname))
+		  if(type.equalsIgnoreCase(stype) && name.equals(sname))
 			  return this;
 		  
 		  int childNum = this.childTables.size();
-			  
-		  if(childNum == 0)
+
+		  if(childNum == 0) 
 			  return null;
-		  
+
 		  for(int i = 0; i < childNum; i++)
 		  {
 			  SymbolTable s = childTables.get(i).getSymbolTable(stype, sname);
@@ -455,7 +458,7 @@ public class SymbolTable extends Object {
 			  if(s != null)
 				  return s;
 		  }
-		  
+
 		  return null;
 	  }
 	  
