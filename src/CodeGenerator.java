@@ -292,14 +292,25 @@ public class CodeGenerator extends Object {
                   
                   if(newNode.toString().equals("Assign"))
                   {
+                	  String rightContent = "";
+                	  
                       Node left = newNode.jjtGetChild(0);
                       Node right = newNode.jjtGetChild(1);
                           
                       result += translateLeftElement(left, localVariables);
-                      result += translateRightElement(right, localVariables);
+                      rightContent += translateRightElement(right, localVariables);
                       
-                      int type = isArray(left, localVariables);
-                      result += storeVars(left.getVal(), type, localVariables);
+                      int typeleft = isArray(left, localVariables);
+                      String typeright = getRightElementType(right, localVariables);
+                      
+                      if(typeleft == 2 && typeright.equals("int")) //array = int
+                    	  result += initializeArrayInt(left, rightContent, localVariables);
+                      else
+                      {
+                    	  result += rightContent;
+                    	  result += storeVars(left.getVal(), typeleft, localVariables);
+                      }
+                    	  
                   }
                   else if(newNode.toString().equals("While")) {
 
@@ -344,6 +355,27 @@ public class CodeGenerator extends Object {
           return result;
   }
   
+ public String initializeArrayInt(Node left, String rightContent, LinkedList<Variable> localVariables)
+ {
+	 String result = "";
+	 
+	 String varname = left.getVal();
+	 
+	 Variable var = getVariable(varname, localVariables);
+	 
+	 Integer size = Integer.decode(var.arraySize);
+	 
+	 for(int i = 0; i < size; i++)
+	 {
+		 result += loadVars(varname, true, localVariables);
+		 result += loadInteger(String.valueOf(i));
+		 result += rightContent;
+		 result += "iastore\n";
+	 }
+	
+	 return result;
+ }
+  
   public String translateLeftElement(Node leftnode, LinkedList<Variable> localVariables)
   {
           String result = "";
@@ -359,6 +391,25 @@ public class CodeGenerator extends Object {
           return result;
   }
 
+  public String getRightElementType(Node right, LinkedList<Variable> localVariables)
+  {
+	  
+	  Node firstnode = right.jjtGetChild(0);
+	  
+	  if(firstnode.toString().equals("ArrSize"))
+		  return "int";
+	  else
+	  {
+		  if(right.jjtGetNumChildren() > 1)
+			  return "int";
+		  
+		  if(firstnode.toString().equals("Term"))
+			  return getTermType(firstnode, localVariables);
+	  }
+	  
+	  return "int";
+  }
+  
   public String translateRightElement(Node right, LinkedList<Variable> localVariables)
   {
 	  String result = "";
@@ -534,6 +585,65 @@ public class CodeGenerator extends Object {
 	  result += negative;
 	  
 	  return result;
+  }
+  
+  public String getTermType(Node termNode, LinkedList<Variable> localVariables)
+  {
+	  String id = "";
+	  String id2 = "";
+	  boolean isFunc = false;
+	  Node argList = null;
+	  Node index = null;
+	  boolean size = false;
+	  
+	  int childsNum = termNode.jjtGetNumChildren();
+	  
+	  for(int i = 0; i < childsNum; i++)
+	  {
+		  Node newnode = termNode.jjtGetChild(i);
+		  
+		   if (newnode.toString().equals("INTEGER"))
+			  return "int";
+		   else if(newnode.toString().equals("AddSubOP"))
+			   return "int";
+		   else if(newnode.toString().equals("ID"))
+			   id = newnode.getVal();
+		   else if(newnode.toString().equals("ID2"))
+			   id2 = newnode.getVal();
+		   else if(newnode.toString().equals("ArgList"))
+			   argList = newnode;
+		   else if(newnode.toString().equals("IsFunc"))
+			   isFunc = true;
+		   else if(newnode.toString().equals("Index"))
+			   index = newnode;
+		   else if(newnode.toString().equals("Size"))
+			   size = true;
+	  }
+	  
+	  if(isFunc) //call
+	  {
+		  if(!id2.equals(""))
+			  return "int";
+		  else
+		  {
+			  SymbolTable functionST = st.getSymbolTable("Func", id);
+			  String ret = functionST.returnType;
+			  
+			  if(ret.endsWith("[]"))
+				  return "int[]";
+			  else
+				  return "int";
+		  }
+	  }
+	  else if(!id.equals("")) //array e scalar access
+	  { 
+		  if(isArray(id,localVariables))
+			  return "int[]";
+		  else
+			  return "int";
+	  }
+	  
+	  return "int";
   }
   
   public String translateWhile(Node whileNode, LinkedList<Variable> localVariables) {
