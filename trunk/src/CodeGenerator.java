@@ -489,8 +489,8 @@ public class CodeGenerator extends Object {
 		  
 		  result += translateCall(s1, s2, argList, localVariables);
 	  }
-	  else //array e scalar access
-	  {
+	  else if(!id.equals("")) //array e scalar access
+	  { 
 		  if(isArray(id,localVariables))
 			  result += loadVars(id, true, localVariables);
 		  else
@@ -499,7 +499,10 @@ public class CodeGenerator extends Object {
 		  if(size)
 			  result += "arraylenght\n";
 		  else if(index != null)
-			  result += translateIndex(index,localVariables);
+			  {
+			  	result += translateIndex(index,localVariables);
+			  	result +="iaload";
+			  }
 	  }
 	  
 	  result += negative;
