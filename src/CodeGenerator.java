@@ -649,7 +649,7 @@ end_if_tag
 		}
 
 		else if (arg.jjtGetChild(0).toString().equals("INTEGER")) {
-		    args = "I"; System.out.println("arg:" + arg.jjtGetChild(0).getVal() + "--" + arg.toString() + "," + arg.getVal());
+		    //args = "I"; System.out.println("arg:" + arg.jjtGetChild(0).getVal() + "--" + arg.toString() + "," + arg.getVal());
 		    result += loadInteger(arg.getVal()); // verificar se está correcto e nao é preciso loads
 		}
 	      
