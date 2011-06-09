@@ -199,19 +199,16 @@ public class SymbolTable extends Object {
 		  else if (stmtType.equals("If")) {
 		      
 		      int numStmtLst = stmt.jjtGetNumChildren();
+		      String ifType;
 		      for (int j=0; j!=numStmtLst; j++) {
+
+			if (j ==2)
+			    ifType = "Else";
+			else
+			    ifType = "If";
 
 			Node ifNode = stmt.jjtGetChild(j);
 			if (ifNode.toString().equals("Stmtlst")) {
-
-			  // Distingue entre if/else
-			  String ifType="If";
-			  if (j==numStmtLst-1) {
-			     ifType="Else";
-			  }
-			  else {
-			    ifType = "If";
-			  }
 
 			  SymbolTable newTable = new SymbolTable(ifType, mainTable);
 			  addFuncBody(ifNode, newTable);
