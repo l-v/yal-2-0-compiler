@@ -630,7 +630,7 @@ end_if_tag
 
 		else if (arg.jjtGetChild(0).toString().equals("INTEGER")) {
 		    args = "I";
-		    result += "\ni_const_" + arg.jjtGetChild(0).getVal(); // verificar se está correcto e nao é preciso loads
+		    result += loadInteger(arg.jjtGetChild(0).getVal()); // verificar se está correcto e nao é preciso loads
 		}
 	      
 	    }
