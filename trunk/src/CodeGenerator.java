@@ -851,7 +851,7 @@ end_if_tag
                 {              	
                         Variable v = list.get(i);
                         
-                        if(v.name.equals(var))
+                        if(v.name.equalsIgnoreCase(var))
                                 return i;
                 }
                 
@@ -895,7 +895,7 @@ end_if_tag
   public boolean isArray(String varname, LinkedList<Variable> list)
   {
 	  Variable var = getVariable(varname, list);
-    	  
+  
 	  if(var.type.equals("int"))
 		  return false; //integer
     	  
