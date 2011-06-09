@@ -440,6 +440,8 @@ public class CodeGenerator extends Object {
   {
 	  String result = "";
 	  
+	  String negative = "";
+	  
 	  int childsNum = termNode.jjtGetNumChildren();
 	  
 	  for(int i = 0; i < childsNum; i++)
@@ -450,10 +452,20 @@ public class CodeGenerator extends Object {
 			  result += loadInteger(newnode.getVal());
 		   else if(newnode.toString().equals("AddSubOP"))
 		   {
-			   //if(newnode.getVal().equals("-"))
-				   //TODO
+			   if(newnode.getVal().equals("-"))
+			   {
+				   negative += loadInteger("-1");
+				   negative += translateOperation("*");
+			   }   
 		   }
+		   else if(newnode.toString().equals("AddSubOP"))
+		   {
+			   
+		   }
+		   
 	  }
+	  
+	  result += negative;
 	  
 	  return result;
   }
@@ -701,12 +713,12 @@ end_if_tag
   public String loadInteger(String integer)
   {
 	  String result = "";
-	  Integer i = Integer.decode(integer);
 	  
-	  if(i >= 0 && i <= 5)
-		  result += "iconst_" + i + "\n";
+	  if(integer.equals("0") || integer.equals("1") || integer.equals("2") ||
+	     integer.equals("3") || integer.equals("4") || integer.equals("5"))
+		  result += "iconst_" + integer + "\n";
 	  else
-		  result += "bipush " + i + "\n";
+		  result += "bipush " + integer + "\n";
 	  
 	  return result;
   }
@@ -731,11 +743,14 @@ end_if_tag
     	  if(indice != -1)
     	  {
     		  if(isArray)
-    			  result += "aload_";
+    			  result += "aload";
     		  else
-    			  result+= "iload_";
+    			  result+= "iload";
     		  
-    		  result += indice + "\n";
+    		  if(indice <= 3 && indice >= 0)
+    			  result += "_" + indice + "\n";
+    		  else
+    			  result += " " + indice + "\n";
     	  }
     		  
       }
@@ -770,11 +785,14 @@ end_if_tag
     	  if(indice != -1)
     	  {
     		  if(type == 2)
-    			  result += "astore_";
+    			  result += "astore";
     		  else
-    			  result+= "istore_";
+    			  result+= "istore";
     		  
-    		  result += indice + "\n";
+    		  if(indice <= 3 && indice >= 0)
+    			  result += "_" + indice + "\n";
+    		  else
+    			  result += " " + indice + "\n";
     	  }
     		  
       }
