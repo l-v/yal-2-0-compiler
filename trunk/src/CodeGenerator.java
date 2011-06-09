@@ -84,12 +84,12 @@ public class CodeGenerator extends Object {
                           i++;
                           String value = declNode.jjtGetChild(i).getVal();
                           
-                          result += "I " + signal + value + "\n";
+                          result += "I = " + signal + value + "\n";
                   }
                   else if(newNode.toString().equals("InicVar"))
                   {
                           String value = newNode.getVal();
-                          result += "I " + value + "\n";
+                          result += "I = " + value + "\n";
                   }
                   else if(newNode.toString().equals("ArraySize") ||
                                   newNode.toString().equals("IsArray"))
