@@ -327,8 +327,6 @@ public class CodeGenerator extends Object {
         	  result += loadVars(var, true, localVariables);
         	  result += translateIndex(leftnode.jjtGetChild(0), localVariables);
           }
-          else //var integer
-        	  result += loadVars(var, false, localVariables);
           
           return result;
   }
