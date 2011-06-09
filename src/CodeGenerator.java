@@ -22,7 +22,7 @@ public class CodeGenerator extends Object {
       String globals = "";
       String arrayInitializations = "";
       String functions = "";
-          
+      String moduleName = file;    
           int childNum = rootNode.jjtGetNumChildren();
           
           for(int i = 0; i < childNum ; i++)
@@ -36,6 +36,7 @@ public class CodeGenerator extends Object {
                         {
                                 header = ".class public " + varName + "\n";
                             header += ".super java/lang/Object\n";
+                            moduleName = varName;
                         }
         
                         else if (varType.equals("Decl"))
@@ -55,7 +56,7 @@ public class CodeGenerator extends Object {
 
       result += header + "\n" + globals + "\n" + arrayInitializations + "\n" + functions;
       
-      createFile(file, result);
+      createFile((moduleName+".j"), result);
   }
 
   public String declareGlobal(Node declNode)
