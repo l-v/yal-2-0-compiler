@@ -442,6 +442,13 @@ public class CodeGenerator extends Object {
 	  
 	  String negative = "";
 	  
+	  String id = "";
+	  String id2 = "";
+	  boolean isFunc = false;
+	  Node argList = null;
+	  Node index = null;
+	  boolean size = false;
+	  
 	  int childsNum = termNode.jjtGetNumChildren();
 	  
 	  for(int i = 0; i < childsNum; i++)
@@ -458,11 +465,35 @@ public class CodeGenerator extends Object {
 				   negative += translateOperation("*");
 			   }   
 		   }
-		   else if(newnode.toString().equals("AddSubOP"))
-		   {
-			   
-		   }
-		   
+		   else if(newnode.toString().equals("ID"))
+			   id = newnode.getVal();
+		   else if(newnode.toString().equals("ID2"))
+			   id2 = newnode.getVal();
+		   else if(newnode.toString().equals("ArgList"))
+			   argList = newnode;
+		   else if(newnode.toString().equals("IsFunc"))
+			   isFunc = true;
+		   else if(newnode.toString().equals("Index"))
+			   index = newnode;
+		   else if(newnode.toString().equals("Size"))
+			   size = true;
+	  }
+	  
+	  if(isFunc) //call
+	  {
+		  
+	  }
+	  else //array e scalar access
+	  {
+		  if(isArray(id,localVariables))
+			  result += loadVars(id, true, localVariables);
+		  else
+			  result += loadVars(id, false, localVariables);
+		  
+		  if(size)
+			  result += "arraylenght\n";
+		  else if(index != null)
+			  result += translateIndex(index,localVariables);
 	  }
 	  
 	  result += negative;
@@ -648,12 +679,20 @@ end_if_tag
 	  String result = "";
 	  
 	  String var = scalaraccess.jjtGetChild(0).getVal();
-	  
-	  result += loadVars(var, true, localVariables);
-	  
+
 	  if(scalaraccess.jjtGetNumChildren() > 1)
+	  {
+		  result += loadVars(var, true, localVariables);
 		  result += "arraylenght\n";
-	  
+	  }
+	  else
+	  {
+		  if(isArray(var,localVariables))
+			  result += loadVars(var, true, localVariables);
+		  else
+			  result += loadVars(var, false, localVariables);
+	  }
+		  
 	  return result;
   }
   
@@ -862,6 +901,19 @@ end_if_tag
       }
       
       return -1;
+  }
+  
+  public boolean isArray(String varname, LinkedList<Variable> list)
+  {
+	  Variable var = getVariable(varname, list);
+    	  
+	  if(var.type.equals("int"))
+		  return false; //integer
+    	  
+	  if(var.type.equals("int[]"))
+		  return true; //array
+      
+      return false;
   }
   
 }
