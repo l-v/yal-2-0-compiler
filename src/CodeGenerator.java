@@ -140,7 +140,8 @@ public class CodeGenerator extends Object {
           String result = "";
           String header = ".method public static";
           String name = "";
-          String ret = "V";
+          String rettype = "V";
+          String retname = "";
           String args = "";
           String body = "";
           String footer = ".end method";
@@ -156,18 +157,27 @@ public class CodeGenerator extends Object {
                   if(newNode.toString().equals("FuncID"))
                   {
                           if(funcNode.jjtGetChild(i+1).toString().equals("IsArray"))
-                                  ret = "[I";
+                          {
+                        	  rettype = "[I";
+                        	  retname = newNode.getVal();
+                          }
                           else if(funcNode.jjtGetChild(i+1).toString().equals("AssignID"))
-                                  ret = "I";
+                          {
+                        	  rettype = "I";
+                        	  retname = newNode.getVal();
+                          }
                           else
-                                  name = newNode.getVal();
+                          {
+                        	  name = newNode.getVal();
+                              retname = "void";
+                          }
                   }
                   else if(newNode.toString().equals("AssignID"))
                           name = newNode.getVal();
                   else if(newNode.toString().equals("Args"))
                           args += translateArgs(newNode);
                   else if(newNode.toString().equals("FuncBody"))
-                          body += translateFuncBody(newNode,name);
+                          body += translateFuncBody(newNode,name, retname);
           }
         
           if(name.equals("main"))
@@ -178,7 +188,7 @@ public class CodeGenerator extends Object {
           result += header + "\n";
           result += name;
           result += "(" + args + ")";
-          result += ret + "\n";
+          result += rettype + "\n";
           result += body + "\n";
           result += footer + "\n\n";
           
@@ -210,7 +220,7 @@ public class CodeGenerator extends Object {
           return result;
   }
   
-  public String translateFuncBody(Node bodyNode, String funcName)
+  public String translateFuncBody(Node bodyNode, String funcName, String retname)
   {
           String result = "";
           
@@ -220,6 +230,8 @@ public class CodeGenerator extends Object {
           String limitStack = ".limit stack ";
           String limitLocals = ".limit locals ";
           String body = "";
+
+          String ret = translateReturn(retname, localVariables);
           
           limitLocals += (localVariables.size());
           
@@ -228,8 +240,34 @@ public class CodeGenerator extends Object {
           result += limitStack + numStack + "\n";
           result += limitLocals + "\n\n";
           result += body + "\n";
+          result += ret;
           
           return result;
+  }
+  
+  public String translateReturn(String ret, LinkedList<Variable> localVariables)
+  {
+	  String result = "";
+	  boolean isArray = false;
+	  
+	  if(ret.equals("void"))
+		  return "return\n";
+	  
+	  if(ret.endsWith("[]"))
+	  {
+		  int endIndex = ret.indexOf("[");
+		  ret = ret.substring(0, endIndex);
+		  isArray = true;
+	  }
+	  
+	  result += loadVars(ret, isArray, localVariables);
+	  
+	  if(isArray)
+		  result += "areturn\n";
+	  else
+		  result += "ireturn\n";
+	  
+	  return result;
   }
   
   public String translateStmtLst(Node stmtNode, LinkedList<Variable> localVariables)
