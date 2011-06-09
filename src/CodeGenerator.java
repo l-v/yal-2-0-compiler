@@ -8,10 +8,14 @@ public class CodeGenerator extends Object {
   LinkedList<Variable> globalVars;
   int numStack;
 
+  SymbolTable currentTable;
+
   CodeGenerator(String file, SymbolTable codeSt, Node rootNode) {
 
       st = codeSt;
       filename = file;
+      currentTable = codeSt;
+      int tableChild = 0;
       
       String result = "";
       String header = "";
@@ -40,8 +44,13 @@ public class CodeGenerator extends Object {
                                 arrayInitializations += initializeArrays(newNode);
                         }
               
-                        else if (varType.equals("Func"))
-                            functions += declareFunction(newNode);
+                        else if (varType.equals("Func")) {
+                            currentTable = st.childTables.get(tableChild);
+			    functions += declareFunction(newNode);
+
+			    currentTable = st;
+			    tableChild++;
+			}
           }
 
       result += header + "\n" + globals + "\n" + arrayInitializations + "\n" + functions;
@@ -164,6 +173,8 @@ public class CodeGenerator extends Object {
           if(name.equals("main"))
                   args = "[Ljava/lang/String;";
           
+	 currentTable = st.getSymbolTable("Func",  name);
+
           result += header + "\n";
           result += name;
           result += "(" + args + ")";
@@ -224,6 +235,10 @@ public class CodeGenerator extends Object {
   public String translateStmtLst(Node stmtNode, LinkedList<Variable> localVariables)
   {
           String result = "";
+
+	  SymbolTable funcTable = currentTable;
+	  int funcChild = 0; // regista indice das tabelas 'filho' percorridas
+         
           
           int numOfStmtLst = stmtNode.jjtGetNumChildren();
           
@@ -242,10 +257,33 @@ public class CodeGenerator extends Object {
                       int type = isArray(left, localVariables);
                       result += storeVars(left.getVal(), type, localVariables);
                   }
-                  else if(newNode.toString().equals("While"))
-                	  result += translateWhile(newNode, localVariables);
-                  else if(newNode.toString().equals("If"))
-                	  result += translateIf(newNode, localVariables);
+                  else if(newNode.toString().equals("While")) {
+
+                	  if (funcChild >= funcTable.childTables.size())
+			      System.out.println("\nErro ao retirar while da tabela: " + funcChild + "--" + funcTable.childTables.size());
+
+
+			  //currentTable updated com tabela while
+			  currentTable = funcTable.childTables.get(funcChild);
+
+
+			  //adiciona as variaveis locais do while 
+			  LinkedList<Variable> whileLocalVars = localVariables;
+			  whileLocalVars.addAll(currentTable.localVars); 
+			  
+
+
+                	  result += translateWhile(newNode, whileLocalVars);
+			  funcChild++;
+			  
+			  // faz 'retrocesso' na tabela a ser analisada
+			  currentTable = funcTable;
+		  }
+		  else if(newNode.toString().equals("If")) {
+                
+			  result += translateIf(newNode, localVariables);
+			  funcChild++;
+		  }
                   else if (newNode.toString().equals("CallID"))
                   {
                 	  Node call2 = null;
@@ -352,21 +390,29 @@ public class CodeGenerator extends Object {
           return result;
   }
 
-  public String exprTest(Node testNode) {
+  public String exprTest(Node testNode, LinkedList<Variable> localVariables) {
       String result = "\n;exprTest";
       
       //check if retrieving values from the correct nodes, and applying them correctly
       String test = testNode.getVal();
 
       int numChildren = testNode.jjtGetNumChildren();
+      String varLeftName = null;
       for (int i=0; i!=numChildren; i++) {
 	    Node child = testNode.jjtGetChild(i);
 
-	    if (child.toString().equals("Lhs")) {
-		 //  result += translateLeftElement(left, localVariables) + "\n";
-	    }
+	    if (child.toString().equals("Lhs")) {		 
+		 varLeftName = child.getVal();
+		 result += translateLeftElement(child, localVariables) + "\n";
+	   }
 	    else if (child.toString().equals("Rhs")) {
-		  // rhs method
+
+		  if (varLeftName == null) {	
+			System.out.println("\nErro em exprTest");
+		  }
+
+		  result += translateRightElement(child, localVariables) + "\n";
+
 	    }
 
       }
@@ -425,7 +471,7 @@ public class CodeGenerator extends Object {
 
 	      //load comparison variables
 	      if (whileChild.toString().equals("ExprTest")) {
-		  result += exprTest(whileChild);
+		  result += exprTest(whileChild, localVariables);
 		  result += " loop_end";
 	      }
 
@@ -445,6 +491,9 @@ public class CodeGenerator extends Object {
   public String translateIf(Node ifNode, LinkedList<Variable> localVariables) {
 	  String result = "\n;IF";
 	  
+	  SymbolTable ifTable = currentTable;
+	  int ifTIndex = 0;
+
 	  int numChildren = ifNode.jjtGetNumChildren();
 	  Boolean elseStatement = false; // verifica se já se passou por um 'if'
 
@@ -454,7 +503,7 @@ public class CodeGenerator extends Object {
 
 	      //load comparison variables
 	      if (ifChild.toString().equals("ExprTest")) {
-		  result += exprTest(ifChild);
+		  result += exprTest(ifChild, localVariables);
 		  result += " else_tag";
 	      }
 
@@ -464,12 +513,26 @@ public class CodeGenerator extends Object {
 		  if (elseStatement) {
 		      result += "\nelse_tag:";
 		  }
+		
+
+		  //currentTable updated com tabela if
+		  currentTable = ifTable.childTables.get(ifTIndex);
+
+
+		  //adiciona as variaveis locais do if/else 
+		  LinkedList<Variable> ifLocalVars = localVariables;
+		  ifLocalVars.addAll(currentTable.localVars); 
 
 		  result += translateStmtLst(ifChild, localVariables);
-  
-		  if (!elseStatement) { //if
+		  ifTIndex++;
+			  
+		  // faz 'retrocesso' na tabela a ser analisada
+		 currentTable = ifTable;
+
+		  if (!elseStatement) { //fim do if
 		      result += "\ngoto endif_tag";
-		  } else { //else
+		      elseStatement = true;
+		  } else { //fim do else
 		      result += "\nendif_tag: ";
 		  }
 	      }
@@ -549,12 +612,12 @@ end_if_tag
 		}
 
 		else if (arg.jjtGetChild(0).toString().equals("STRING")) {
-		    args += "I";
+		    args += "Ljava/lang/String;";
 		    result += "\nldc \"" + arg.jjtGetChild(0) + "\"";
 		}
 
 		else if (arg.jjtGetChild(0).toString().equals("INTEGER")) {
-		    args = "Ljava/lang/String;";
+		    args = "I";
 		    result += "\ni_const_" + arg.jjtGetChild(0).getVal(); // verificar se está correcto e nao é preciso loads
 		}
 	      
