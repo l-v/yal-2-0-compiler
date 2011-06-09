@@ -424,16 +424,55 @@ public class CodeGenerator extends Object {
 	  return result;
   }  
 
-  public String translateIf(Node whileNode, LinkedList<Variable> localVariables) {
-	  String result = "";
+  public String translateIf(Node ifNode, LinkedList<Variable> localVariables) {
+	  String result = "\n;IF";
 	  
+	  int numChildren = ifNode.jjtGetNumChildren();
+	  Boolean elseStatement = false; // verifica se já se passou por um 'if'
 
+	  for (int i=0; i!=numChildren; i++) {
 
+	      Node ifChild = ifNode.jjtGetChild(i);
+
+	      //load comparison variables
+	      if (ifChild.toString().equals("ExprTest")) {
+		  result += exprTest(ifChild);
+		  result += " else_tag";
+	      }
+
+	      // execute statement
+	      else if (ifChild.toString().equals("Stmtlst")) {
+
+		  if (elseStatement) {
+		      result += "\nelse_tag:";
+		  }
+
+		  result += translateStmtLst(ifChild, localVariables);
+  
+		  if (!elseStatement) { //if
+		      result += "\ngoto endif_tag";
+		  } else { //else
+		      result += "\nendif_tag: ";
+		  }
+	      }
+
+	  }
+/* SKETCH
+if(5<4) else_tag
+... 
+...
+goto end_if_tag
+else_tag
+...
+... 
+...
+end_if_tag
+*/
 
 	  return result;
   }
 
-  public String translateCall(Node callNode1, Node callNode2, Node argList, LinkedList<Variable> localVariables) {
+   public String translateCall(Node callNode1, Node callNode2, Node argList, LinkedList<Variable> localVariables) {
       
 	String result = "\n;Call";
 
@@ -452,6 +491,24 @@ public class CodeGenerator extends Object {
 
 
 	// load arguments
+	SymbolTable calledFunc = st.getSymbolTable("Func", functionName);
+	
+
+	/*
+	int numFuncArgs = calledFunc.funcArgs.size();
+	for (int i=0; i!=numFuncArgs; i++) {
+	    Variable funcArg = calledFunc.funcArgs.get(i);
+
+	    if (funcArg.type.equals("int")) {
+		args += "I";
+	    } else {
+		args += "[I";
+	    }
+
+	}
+*/
+
+	 // invocar os argumentos - utiliza tabela para distinguir entre variaveis int e int[]
 	String args = "(";
 
 	if (argList != null) {
@@ -460,17 +517,27 @@ public class CodeGenerator extends Object {
 	    for (int i=0; i!=numArgs; i++) {
 		Node arg = argList.jjtGetChild(i);
 
-		// treat argument (descobrir quais sao int e quais sao int[]
+		// treat argument (fazer load??)
 		if (arg.jjtGetChild(0).toString().equals("ArgID")) {
 
+		    Boolean isArray = false;
+		    if (calledFunc.funcArgs.get(i).type.contains("[]")) {
+			isArray = true;
+			args += "[";
+		    }
+		
+		    args += "I";
+		    result += "\n" + loadVars(arg.getVal(), isArray, localVariables);
 		}
 
 		else if (arg.jjtGetChild(0).toString().equals("STRING")) {
-
+		    args += "I";
+		    result += "\nldc \"" + arg.jjtGetChild(0) + "\"";
 		}
 
 		else if (arg.jjtGetChild(0).toString().equals("INTEGER")) {
-
+		    args = "Ljava/lang/String;";
+		    result += "\ni_const_" + arg.jjtGetChild(0).getVal(); // verificar se está correcto e nao é preciso loads
 		}
 	      
 	    }

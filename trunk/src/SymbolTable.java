@@ -256,6 +256,14 @@ public class SymbolTable extends Object {
 	     Node rhs = node.jjtGetChild(1);
 	     //System.out.println("==="+lhs.getVal());
 
+
+	    // operacao b.size=... nao permitida
+	    if (lhs.getVal().equalsIgnoreCase("size")) {
+		
+		System.out.println("\nWarning: attributing a value to size");
+	    }
+
+
 	      // verificar se variavel nao foi já declarada em niveis acima 
 	     Boolean alreadyDeclared = false;
 	     SymbolTable parent = this;
@@ -327,8 +335,6 @@ public class SymbolTable extends Object {
 			  // assign tem variaveis: ver possiveis erros
 			  OnHoldError newError = new OnHoldError(termChild.getVal(), "assign", termChild.getLine(), argsNode, lhs.getVal());
 			  SAnalysis.errors.add(newError);
-
-
 		      }
 		}
 
