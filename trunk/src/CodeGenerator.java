@@ -7,6 +7,7 @@ public class CodeGenerator extends Object {
   String filename;
   LinkedList<Variable> globalVars;
   int numStack;
+  int numLocals;
   int labelCounter;
 
   SymbolTable currentTable;
@@ -149,8 +150,6 @@ public class CodeGenerator extends Object {
           String body = "";
           String footer = ".end method";
           
-          numStack = 20;
-          
           int childNum = funcNode.jjtGetNumChildren();
           
           for(int i = 0; i < childNum; i++)
@@ -227,6 +226,9 @@ public class CodeGenerator extends Object {
   {
           String result = "";
           
+          numLocals = 0;
+          numStack = 20;
+          
           LinkedList<Variable> localVariables = getLocalVariables("Func", funcName);
           globalVars = st.localVars;
           
@@ -236,17 +238,15 @@ public class CodeGenerator extends Object {
 
           String ret = translateReturn(retname, localVariables);
           
-          limitLocals += (localVariables.size());
-          
           if(funcName.equals("main"))
-        	  limitLocals += (localVariables.size() + 1);  
+        	  numLocals += (localVariables.size() + 1);  
           else
-        	  limitLocals += (localVariables.size()); 
+        	  numLocals += (localVariables.size());
           
           body += translateStmtLst(bodyNode.jjtGetChild(0), localVariables);
             
           result += limitStack + numStack + "\n";
-          result += limitLocals + "\n\n";
+          result += limitLocals + numLocals + "\n\n";
           result += body + "\n";
           result += ret;
           
@@ -375,6 +375,7 @@ public class CodeGenerator extends Object {
 	  
 	  int tagCounter = labelCounter;
 	  labelCounter++;
+	  numLocals++;
 	  
 	  result += "iconst_0\n";
 	  result += "istore " + localVariables.size() + "\n";
