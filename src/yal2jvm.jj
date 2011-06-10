@@ -15,16 +15,17 @@ options
 PARSER_BEGIN(yal2jvm)
 
 import java.util.*;
+import java.io.*;
 
 public class yal2jvm/*@bgen(jjtree)*/implements yal2jvmTreeConstants/*@egen*/{/*@bgen(jjtree)*/
   protected static JJTyal2jvmState jjtree = new JJTyal2jvmState();
 
 /*@egen*/
 
-	public static void main(String args[]) throws ParseException {
-
+	public static void main(String args[]) throws ParseException, FileNotFoundException {
+			
 	  	// criacao do objecto para ler do standard input (teclado)
-		yal2jvm newParser = new yal2jvm(System.in);
+		yal2jvm newParser = new yal2jvm(new FileInputStream(args[0]));
 
 		SimpleNode root = newParser.parserBegin(); //devolve referencia para o no raiz da arvore
 		SymbolTable ST = new SymbolTable(root);
