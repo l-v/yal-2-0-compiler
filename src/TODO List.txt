@@ -1,33 +1,140 @@
-A FAZER:
 
+Operações Aritméticas + - * /  
+--------
+1 + 2			checked (todos os sinais)
+1 + a			checked (" " ")
+a - b			checked (" " ")
+-a * b			checked (" " ")
+-3 + -6			checked (" " ")
+-3 + +6			checked 
 
-ESTRUTURA DA ÁRVORE
+c = c - 1;		checked;
+c = c - c;		checked;
+=========================
+Comparações > < = == != <= >= fixed
 
-MODULE
-	MID
-	FUNC
-	DEC
+Shifts	<< >> <<<(?)	[falta]
+========================
 
-DEC
-	ISARRAY -> já coloquei no .jjt e utilizei no CodeGenerator.java falta agora colocar na tabela de símbolos
-	ARRAYSIZE
-	ADDSUBOP
-	INICVAR
+Estruturas if/else
+----------              checked
+    if(a < 5) {
+	e=3;
+    }
+-----------		fixed
+    if () {
+    }
+    else {
 
-ARRAYSIZE
-	SCALAR
-	INTEGER
+    }
+------------		fixed
+    e=3;
+    if (b!=4) {
+	e=4;
+	b=111;
+    }
+    else {
+	e = 5;
+	b = 7;
+    }
+    
 
-SCALAR
-	SCALARID
-	SCALARSIZE
+    if (b==111) {
+      e=10;
+    }
+    if (b==6) {
+	e = 11;
+    }
+    if (b == 7) {
+	e = 12;
+    }
+io.println(e);
+io.println(b);
 
-LHS
-	Id
-	size
-	INDEX
+Resultado: e=12, b=7.
+-----------		checked
+  if (e == 3) {
+      if (b == 4) {
+	  if (a==5) {
+	      e = -11;
+	  }
+	  else {
+	      e = +22;
+	  }
+      }
+  }
+  io.prin    
 
-INDEX
-	INDEXID
-	INTEGER
-	 
+============================
+Estruturas while
+-----------		checked (para <, >, <=, !=, etc)
+while (i < N) {
+    println(i);
+    i = i+1;
+}
+----------		checked
+while (i < N) {
+    println(i);
+    i = i-1;
+}
+---------
+   i=0;			fixed
+   while(i <= 5)
+   {
+   	//a[i] = i;
+	
+
+	io.println(i);
+	i=i+1;
+
+	z = 50;
+	while(z <= 100) {
+	    io.println("z: ");
+	    io.println(z);
+	    z=z+10;
+	}
+  }
+
+============================
+Arrays
+----------
+a[];			[falta]
+a=[10];			... nao dá erro, mas falta código em .j
+a[1] = 5;		... erro jasmin
+c = a[1];		[falta]
+============================
+Chamada de funções
+-------------		checked
+function f1() {}
+function main() {
+    f1();
+}
+------------		checked
+function f1(N) {
+    b = N;
+    println(N);
+}
+function main() {
+    a = 5;
+    f1(a);
+}
+----------		[falta]
+function c = f1() {
+    c = 10;
+}
+function main() {
+    a = f1();
+    println(a);
+}
+--------		erro em jasmin
+function c = f1(a, b) {
+    c = a+b;
+}
+function main() {
+    s = 1;
+    d = 2;
+    e = f1(s, d);
+    println(e);
+}
+
+[falta testar funções com arrays]
