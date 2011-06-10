@@ -303,13 +303,21 @@ public class CodeGenerator extends Object {
                       rightContent += translateRightElement(right, localVariables);
                       
                       int typeleft = isArray(left, localVariables);
-		      if (right.jjtGetChild(0).toString().equals("ArrSize"))
-			  typeleft = 2;
+                      
+                      if (right.jjtGetChild(0).toString().equals("ArrSize"))
+                    	  typeleft = 2;
 
                       String typeright = getRightElementType(right, localVariables);
                       
+                      System.out.println("TIPO: ");
+                      System.out.println("\tLeft: " + typeleft);
+                      System.out.println("\tRight: " + typeright);
+                      
                       if(typeleft == 2 && typeright.equals("int")) //array = int
+                      {
+                    	  System.out.println("tipos diferentes!!!!!");
                     	  result += initializeArrayInt(left, rightContent, localVariables);
+                      }
                       else
                       {
                     	  result += rightContent;
@@ -362,24 +370,32 @@ public class CodeGenerator extends Object {
   
  public String initializeArrayInt(Node left, String rightContent, LinkedList<Variable> localVariables)
  {
-	 String result = "";
-	 
-	 String varname = left.getVal();
-	 
-	 Variable var = getVariable(varname, localVariables);
-	 
-	 Integer size = Integer.decode(var.arraySize);
-	 
-	 for(int i = 0; i < size; i++)
-	 {
-		 result += loadVars(varname, true, localVariables);
-		 result += loadInteger(String.valueOf(i));
-		 result += rightContent;
-		 result += "iastore\n";
-	 }
-	
-	 return result;
- }
+	  String array = left.getVal();
+	  String result = "";
+	  
+	  int tagCounter = labelCounter;
+	  labelCounter++;
+	  
+	  result += "iconst_0\n";
+	  result += "istore " + localVariables.size() + "\n";
+	  
+	  result += "\nLabel" + tagCounter + ":\n";
+	  
+	  result += loadVars(array, true, localVariables); //first the reference
+	  result += "iload " + localVariables.size() + "\n"; //second the index
+	  result += rightContent;
+	  result += "iastore\n"; //then the store
+	  
+	  result += "iinc " + localVariables.size() + " 1\n"; //increment the index
+	  
+	  result += "iload " + localVariables.size() + "\n"; //index
+	  result += loadVars(array, true, localVariables);
+	  result += "arraylength\n"; //arraysize
+	  
+	  result += "if_icmpne Label" + tagCounter + "\n";
+
+	  return result;
+ } 
   
   public String translateLeftElement(Node leftnode, LinkedList<Variable> localVariables, Boolean inExprTest)
   {
@@ -405,7 +421,7 @@ public class CodeGenerator extends Object {
 	  Node firstnode = right.jjtGetChild(0);
 	  
 	  if(firstnode.toString().equals("ArrSize"))
-		  return "int";
+		  return "int[]";
 	  else
 	  {
 		  if(right.jjtGetNumChildren() > 1)
