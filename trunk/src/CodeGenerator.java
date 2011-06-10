@@ -7,6 +7,7 @@ public class CodeGenerator extends Object {
   String filename;
   LinkedList<Variable> globalVars;
   int numStack;
+  int labelCounter;
 
   SymbolTable currentTable;
 
@@ -16,6 +17,7 @@ public class CodeGenerator extends Object {
       filename = file;
       currentTable = codeSt;
       int tableChild = 0;
+      labelCounter = 0;
       
       String result = "";
       String header = "";
@@ -656,7 +658,10 @@ System.out.println("r: " + translateRightElement(child, localVariables) + "\n");
   public String translateWhile(Node whileNode, LinkedList<Variable> localVariables) {
 
 	  String result = "\n;WHILE";
-	  result += "\nloop:\n";
+	  int tagCounter = labelCounter;
+	  labelCounter++;
+
+	  result += "\nloop" + tagCounter + ":\n";
 
 
 	  int numChildren = whileNode.jjtGetNumChildren();
@@ -667,7 +672,7 @@ System.out.println("r: " + translateRightElement(child, localVariables) + "\n");
 	      //load comparison variables
 	      if (whileChild.toString().equals("Exprtest")) {
 		  result += exprTest(whileChild, localVariables);
-		  result += " loop_end\n";
+		  result += " loop_end" + tagCounter + "\n";
 	      }
 
 	      // execute statement
@@ -677,51 +682,61 @@ System.out.println("r: " + translateRightElement(child, localVariables) + "\n");
 
 	  }
 
-	  result += "\ngoto loop";
-	  result += "\nloop_end:\n";
+	  result += "\ngoto loop" + tagCounter;
+	  result += "\nloop_end" + tagCounter + ":\n";
 
 	  return result;
   }  
 
   public String translateIf(Node ifNode, LinkedList<Variable> localVariables) {
-	  String result = "\n;IF";
-	  
-	  int ifTIndex = 0;
+	  String result = "\n;IF\n";
+
+	  int tagCounter = labelCounter;
+	  labelCounter++;
 
 	  int numChildren = ifNode.jjtGetNumChildren();
-	  Boolean elseStatement = false; // verifica se já se passou por um 'if'
+	  Boolean elseSwitch = false; // verifica se já se passou por um 'if'
+
+	  String elseTag = "\nelse_tag" + tagCounter + ":\n";
+	  String ifStatement = null;
+	  String elseStatement = null;
 
 	  for (int i=0; i!=numChildren; i++) {
 
 	      Node ifChild = ifNode.jjtGetChild(i);
 
 	      //load comparison variables
-	      if (ifChild.toString().equals("ExprTest")) {
+	      if (ifChild.toString().equals("Exprtest")) {
 		  result += exprTest(ifChild, localVariables);
-		  result += " else_tag";
+		  //result += " else_tag\n";
 	      }
 
 	      // execute statement
 	      else if (ifChild.toString().equals("Stmtlst")) {
-
-		  if (elseStatement) {
-		      result += "\nelse_tag:\n";
-		  }
 		
+		  if (!elseSwitch)
+		      ifStatement = translateStmtLst(ifChild, localVariables);
+		  else
+		      elseStatement = translateStmtLst(ifChild, localVariables);
 
-		  result += translateStmtLst(ifChild, localVariables);
-		  ifTIndex++;
-			  
-
-		  if (!elseStatement) { //fim do if
-		      result += "\ngoto endif_tag";
-		      elseStatement = true;
-		  } else { //fim do else
-		      result += "\nendif_tag: \n";
-		  }
+		  if (!elseSwitch) { 
+		      elseSwitch = true;
+		  } 
+		      
 	      }
 
 	  }
+
+
+	  if (elseStatement == null) { // apenas if 
+	      result += " end_if_tag" + tagCounter + "\n" + ifStatement + "\nend_if_tag" + tagCounter + ": \n";
+	  }
+	  else {
+	      result += " else_tag" + tagCounter + "\n" + ifStatement + "\ngoto end_if_tag" + tagCounter + "\nelse_tag" + tagCounter + ": \n" + elseStatement + "\nend_if_tag" + tagCounter + ":\n";
+	  }
+
+
+
 /* SKETCH
 if(5<4) else_tag
 ... 
@@ -732,8 +747,13 @@ else_tag
 ... 
 ...
 end_if_tag
-*/
+*//*
+if (5<4) end_if_tag
+....
+...
+end_if_tag 
 
+*/
 	  return result;
   }
 
@@ -770,7 +790,7 @@ end_if_tag
 
 	if (argList != null) {
 	    int numArgs = argList.jjtGetNumChildren(); 
-	System.out.println("|||!" + argList.toString() + "," + argList.jjtGetNumChildren());
+	
 	    for (int i=0; i!=numArgs; i++) {
 		Node arg = argList.jjtGetChild(i);
 		System.out.println("toString: " + arg.toString() + "," + arg.getVal());
@@ -800,7 +820,7 @@ end_if_tag
 		}
 
 		else if (arg.jjtGetChild(0).toString().equals("INTEGER")) {
-		    args += "I"; //System.out.println("arg:" + arg.jjtGetChild(0).getVal() + "--" + arg.toString() + "," + arg.getVal());
+		    args += "I"; 
 		    result += loadInteger(arg.getVal()); // verificar se está correcto e nao é preciso loads
 		}
 	      
@@ -1049,11 +1069,7 @@ System.out.println("---args: " + args);
   }
   
   public boolean isArray(String varname, LinkedList<Variable> list)
-  {System.out.println("varing: " + varname + "  list: " + list.size()); 
-for (int i=0; i!=list.size(); i++) {
-System.out.println("+" + list.get(i).name);
-}
-
+  {
 	  Variable var = getVariable(varname, list);
   
 	  if(var.type.equals("int"))
