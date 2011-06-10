@@ -289,7 +289,7 @@ public class SymbolTable extends Object {
 
 	      //adiciona variavel nao declarada à tabela
 	     if (!alreadyDeclared) {
-		if (lhs.jjtGetNumChildren() !=0) {
+		if (lhs.jjtGetNumChildren() !=0 || rhs.jjtGetChild(0).toString().equals("ArrSize")) {
 
 		    //inserir tamanho array?
 		    table.addVar(lhs.getVal(), "int[]");
