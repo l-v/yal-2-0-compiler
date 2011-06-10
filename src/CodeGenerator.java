@@ -787,7 +787,11 @@ end_if_tag
 	    moduleName = callNode1.getVal();
 	    inModule = false;
 	}
-
+	else if(callNode1.getVal().equals(st.name))
+	{
+		moduleName = st.name;
+		functionName = callNode2.getVal();
+	}
 	else /*if (callNode2 == null)*/ {
 	    functionName = callNode1.getVal();
 	    moduleName = st.name;
@@ -801,6 +805,7 @@ end_if_tag
 */
 ;
 	// load arguments
+
 	SymbolTable calledFunc = st.getSymbolTable("Func", functionName);
 	String funcReturn = "V";
   
