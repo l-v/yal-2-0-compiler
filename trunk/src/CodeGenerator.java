@@ -297,7 +297,7 @@ public class CodeGenerator extends Object {
                       Node left = newNode.jjtGetChild(0);
                       Node right = newNode.jjtGetChild(1);
                           
-                      result += translateLeftElement(left, localVariables);
+                      result += translateLeftElement(left, localVariables, false);
                       rightContent += translateRightElement(right, localVariables);
                       
                       int typeleft = isArray(left, localVariables);
@@ -379,7 +379,7 @@ public class CodeGenerator extends Object {
 	 return result;
  }
   
-  public String translateLeftElement(Node leftnode, LinkedList<Variable> localVariables)
+  public String translateLeftElement(Node leftnode, LinkedList<Variable> localVariables, Boolean inExprTest)
   {
           String result = "";
           
@@ -390,7 +390,10 @@ public class CodeGenerator extends Object {
         	  result += loadVars(var, true, localVariables);
         	  result += translateIndex(leftnode.jjtGetChild(0), localVariables);
           }
-          
+	  else if (inExprTest) {
+		  result += loadVars(var, false, localVariables);
+	  }
+
           return result;
   }
 
@@ -471,7 +474,7 @@ public class CodeGenerator extends Object {
   }
 
   public String exprTest(Node testNode, LinkedList<Variable> localVariables) {
-      String result = "\n;exprTest";
+      String result = "\n;exprTest\n";
       
       //check if retrieving values from the correct nodes, and applying them correctly
       String test = testNode.getVal();
@@ -483,16 +486,19 @@ public class CodeGenerator extends Object {
 
 	    if (child.toString().equals("Lhs")) {		 
 		 varLeftName = child.getVal();
-		 result += translateLeftElement(child, localVariables) + "\n";
+		 result += translateLeftElement(child, localVariables, true) + "\n";
+		 System.out.println("left: " + varLeftName + result);
+		System.out.println("l:" + translateLeftElement(child, localVariables, true) + "\n");
 	   }
 	    else if (child.toString().equals("Rhs")) {
-
+ 
 		  if (varLeftName == null) {	
 			System.out.println("\nErro em exprTest");
 		  }
 
 		  result += translateRightElement(child, localVariables) + "\n";
-
+System.out.println("right: " + child.jjtGetChild(0).jjtGetChild(0).getVal());
+System.out.println("r: " + translateRightElement(child, localVariables) + "\n");
 	    }
 
       }
@@ -506,13 +512,11 @@ public class CodeGenerator extends Object {
 	  result += "\nif_icmple"; // int <= int
       else if (test.equals("<"))
 	  result += "\nif_icmpge"; // int >= int
-      else if (test.equals("<=")) 
+      else if (test.equals(">=")) 
 	  result += "\nif_icmplt"; // int > int
-      else if (test.equals(">="))
+      else if (test.equals("<="))
 	  result += "\nif_icmpgt"; // int < int
-      
-
-     
+          
       return result;
   }
 
@@ -656,12 +660,12 @@ public class CodeGenerator extends Object {
 
 
 	  int numChildren = whileNode.jjtGetNumChildren();
-	  for (int i=0; i!=numChildren; i++) {
+	  for (int i=0; i!=2; i++) {
 
 	      Node whileChild = whileNode.jjtGetChild(i);
 
 	      //load comparison variables
-	      if (whileChild.toString().equals("ExprTest")) {
+	      if (whileChild.toString().equals("Exprtest")) {
 		  result += exprTest(whileChild, localVariables);
 		  result += " loop_end\n";
 	      }
