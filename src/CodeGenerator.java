@@ -600,7 +600,7 @@ System.out.println("r: " + translateRightElement(child, localVariables) + "\n");
 			  result += loadVars(id, false, localVariables);
 		  
 		  if(size)
-			  result += "arraylenght\n";
+			  result += "arraylength\n";
 		  else if(index != null)
 			  {
 			  	result += translateIndex(index,localVariables);
@@ -782,27 +782,37 @@ end_if_tag
 	String functionName;
 	Boolean inModule = true;
 
-	if (callNode2 == null) {
-	    functionName = callNode1.getVal();
-	    moduleName = st.name;
-	}
-
-	else {
+	if (callNode1.getVal().equalsIgnoreCase("io")) {
 	    functionName = callNode2.getVal();
 	    moduleName = callNode1.getVal();
 	    inModule = false;
 	}
 
-
+	else /*if (callNode2 == null)*/ {
+	    functionName = callNode1.getVal();
+	    moduleName = st.name;
+	}
+/*
+	else {
+	    functionName = callNode2.getVal();
+	    moduleName = callNode1.getVal();
+	    inModule = false;
+	}
+*/
+;
 	// load arguments
 	SymbolTable calledFunc = st.getSymbolTable("Func", functionName);
-	//System.out.println("call: " + callNode1.getVal() + ":" + callNode2.getVal());
-	
-	if (moduleName.equalsIgnoreCase("io") && functionName.equalsIgnoreCase("println")) {
-	    result += "\ngetstatic java/lang/System.out Ljava/io/PrintStream;";
+	String funcReturn = "V";
+  
+	if (inModule) {
+	      if (calledFunc.returnType.contains("[]")) {
+		  funcReturn = "[I";
+	      }
+	      else if (!calledFunc.returnType.equalsIgnoreCase("void")) {
+		  funcReturn = "I";
+	      }
 	}
 
-	 // invocar os argumentos - utiliza tabela para distinguir entre variaveis int e int[]
 	String args = "(";
 
 	if (argList != null) {
@@ -810,16 +820,13 @@ end_if_tag
 	
 	    for (int i=0; i!=numArgs; i++) {
 		Node arg = argList.jjtGetChild(i);
-		System.out.println("toString: " + arg.toString() + "," + arg.getVal());
-		System.out.println("child: " + arg.jjtGetChild(0).toString() + "," + arg.jjtGetChild(0).getVal());
-		// treat argument (fazer load??)
+		
+		// treat argument (fazer load)
 		if (arg.jjtGetChild(0).toString().equals("ArgID")) {
 
-		    Boolean isArray = false; /*
-		    if (calledFunc.funcArgs.get(i).type.contains("[]")) {
-			isArray = true;
-			args += "[";
-		    }*/Variable var = getVariable(arg.getVal(), localVariables);
+		    Boolean isArray = false; 
+		    Variable var = getVariable(arg.getVal(), localVariables);
+
 		    if (var == null) System.out.println("Erro em translateCall");
 		    
 		    if (var.type.contains("[]")) {
@@ -838,20 +845,16 @@ end_if_tag
 
 		else if (arg.jjtGetChild(0).toString().equals("INTEGER")) {
 		    args += "I"; 
-		    result += loadInteger(arg.getVal()); // verificar se está correcto e nao é preciso loads
+		    result += loadInteger(arg.getVal()); 
 		}
 	      
 	    }
-	} else System.out.println("arglist is null :o");
+	} 
 
-System.out.println("---args: " + args);
-	if (moduleName.equalsIgnoreCase("io") && functionName.equalsIgnoreCase("println")) {
-	    result += "\ninvokevirtual java/io/PrintStream.println";
-	}
-	else {
-	    result += "\ninvokestatic " + moduleName + "/" + functionName;
-	}
-	result += args + ")V\n";
+
+	result += "\ninvokestatic " + moduleName + "/" + functionName;
+
+	result += args + ")" + funcReturn + "\n";
 	return result;
   }
    
@@ -865,7 +868,7 @@ System.out.println("---args: " + args);
 	  if(scalaraccess.jjtGetNumChildren() > 1)
 	  {
 		  result += loadVars(var, true, localVariables);
-		  result += "arraylenght\n";
+		  result += "arraylength\n";
 	  }
 	  else
 	  {
